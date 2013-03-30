@@ -7,6 +7,30 @@ if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
 
 
+def load_image(name):
+  '''given a filename, returns a pygame.Surface'''
+  filename= os.path.join('data', name)
+  try:
+    image= pygame.image.load(filename)
+  except pygame.error, message:
+    print 'Cannot noad image:', filename
+    raise SystemExit, message
+  image= image.convert_alpha()
+  return image, image.get_rect()
+
+def load_sound(name):
+  class NoneSound:
+    def play(self):pass
+  if not pygame.mixer or not pygame.mixer.get_init():
+    return NoneSound()
+  filename= os.path.join('data',name)
+  try:
+    sound= pygame.mixer.Sound(filename)
+  except pygame.error, message:
+    print 'Cannot load sound:', fullname
+    raise SystemExit, message
+  return sound
+
 ## functions to create our resources
 def load_image( name, colorkey = None ):
     '''
