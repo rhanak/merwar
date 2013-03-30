@@ -1,0 +1,7 @@
+{
+    "screen_size": [ 900, 630 ],
+    "window_title": "MerWar",
+    "fps": 60,
+    "splash_screen": "splash_screen.jpg",
+    "levels": [ "maze" ]
+}
