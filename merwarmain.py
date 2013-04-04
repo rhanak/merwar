@@ -8,7 +8,7 @@ from utils import *
 from modes import ModeManager, GameMode, SimpleMode
 from characters import *
 '''from char import *'''
-from pages import *
+from gameengine import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -47,8 +47,8 @@ def main():
 
 	select_screen(screen)
 
-	page_manager = PageManager(screen)
-	backgrounds = page_manager.load_backgrounds()
+	game_engine = GameEngine(screen)
+	backgrounds = game_engine.load_backgrounds()
 	screen.blit(backgrounds[1],(0,0))
 	pygame.display.flip()
 
@@ -57,7 +57,7 @@ def main():
 	stab_sound = load_sound('bubbleshit.wav')
 
 	for character in csv.DictReader( open( os.path.join( kDataDir, 'maze_characters.csv' ) ) ):
-		mermaid = Mermaid(character,page_manager)
+		mermaid = Mermaid(character,game_engine, None)
 	mermaidg = pygame.sprite.Group( ( mermaid ) )
 
 	while 1:
@@ -73,7 +73,7 @@ def main():
 			elif event.type is MOUSEBUTTONUP:
 				mermaid.unstab()
 				
-		page_manager.update()
+		game_engine.update()
 		mermaid.update()
 		mermaidg.draw(screen)
 		pygame.display.flip()
