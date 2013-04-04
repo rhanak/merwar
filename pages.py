@@ -4,7 +4,6 @@ from utils import *
 
 class PageManager():
 	def __init__(self):
-		self.difficulty = "normal"
 		self.curr_num_enemies = 0
 		self.curr_type_enemies = "none"
 
