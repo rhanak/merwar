@@ -42,9 +42,9 @@ def main():
   
   
   '''background = pygame.image.load(path_rejoin('data/underthesea.png')).convert()'''
-  backgroundEasy = pygame.image.load(path_rejoin('data/undertheseaeasy.png')).convert()
-  backgroundNormal = pygame.image.load(path_rejoin('data/underthesea.png')).convert()
-  backgroundHard = pygame.image.load(path_rejoin('data/undertheseahard.png')).convert()
+  backgroundEasy = pygame.image.load(path_rejoin('data/backgrounds/undertheseaeasy.png')).convert()
+  backgroundNormal = pygame.image.load(path_rejoin('data/backgrounds/underthesea.png')).convert()
+  backgroundHard = pygame.image.load(path_rejoin('data/backgrounds/undertheseahard.png')).convert()
   screen.blit(backgroundNormal,(0,0))
   pygame.display.flip()
   
@@ -52,9 +52,8 @@ def main():
   whiff_sound = load_sound('bubbles.wav')
   stab_sound = load_sound('bubbleshit.wav')
   sharkManager = SharkManager()
-  sharkgroup = pygame.sprite.Group( sharkManager.returnSharks() )
   for character in csv.DictReader( open( os.path.join( kDataDir, 'maze_characters.csv' ) ) ):
-    mermaid = Mermaid(character, sharkgroup, sharkManager)
+    mermaid = Mermaid(character, sharkManager.sharkGroup(), sharkManager)
   mermaidg = pygame.sprite.Group( ( mermaid ) )
   
   while 1:
@@ -76,9 +75,8 @@ def main():
         mermaid.unstab()
         
     changeInDifficulty=mermaid.update()
-    if (changeInDifficulty):
-      sharkgroup.empty()
-      sharkgroup = pygame.sprite.Group( sharkManager.returnSharks() )
+
+    sharkgroup = sharkManager.sharkGroup()
     sharkgroup.update()
     
     if(difficulty=="easy"):

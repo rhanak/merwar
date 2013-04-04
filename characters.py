@@ -1,14 +1,23 @@
 import os, pygame, json, random, csv, math
 from pygame.locals import *
 from utils import *
+import threading
 
 difficulty = "normal"
 
 class SharkManager():
   def __init__(self):
     self.numSharks = 3
+    self.sharks = None
+    self.difficulty = difficulty
+    def collided(x): x.speed[0] = 0
+    
+    self.b = BadGuyCollider(collided)
+    self.b.setGroup(self.sharkGroup())
+    self.b.daemon = True
+    self.b.start()
 
-  def returnSharks(self):
+  def sharkGroup(self):
     global difficulty
     if(difficulty=="easy"):
       self.numSharks = 1
@@ -16,12 +25,36 @@ class SharkManager():
       self.numSharks = 3
     if(difficulty=="hard"):
       self.numSharks = 6
-
-    sharks = []
-    for i in range(self.numSharks):
-      sharks.append(Shark())
-    return sharks
-
+    
+    if(self.sharks is None or self.difficulty != difficulty):
+      self.sharks = pygame.sprite.Group()
+      for i in range(self.numSharks):
+       self.sharks.add(Shark())
+      self.b.setGroup(self.sharks)
+    return self.sharks 
+  
+class BadGuyCollider(threading.Thread):
+  def __init__(self, collided):
+    threading.Thread.__init__(self)
+    self.collided = collided
+  
+  def setGroup(self, group):
+    self.group = group.copy()
+  
+  def run(self):
+    while True:
+      sprites = self.group.sprites()
+      for sprite in sprites:
+        self.group.remove(sprite)
+        sprite_hit_list = pygame.sprite.spritecollide(sprite, self.group, False)
+        
+        # Check the list of colliding sprites, and add one to the score for each one
+        for sprite_collided in sprite_hit_list:
+          self.collided(sprite_collided)
+            
+        # Add the sprite back so we can test for it again next go round
+        self.group.add(sprite)       
+                    
 class Mermaid( pygame.sprite.Sprite ):
 	def __init__( self, props, enemies, manager ):
 		pygame.sprite.Sprite.__init__( self )
