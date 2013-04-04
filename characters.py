@@ -221,6 +221,12 @@ class Shark(pygame.sprite.Sprite):
 			self.image = rotate(self.original, self.dizzy)
 		self.rect = self.image.get_rect(center=center)
 		
+	def joinWith(self, other, dims):
+		new_speed = other.velocity
+		if new_speed[0] * self.velocity[0] < 0:
+			self.image = pygame.transform.flip(self.image,1,0)
+		
+		
 	def stabbed(self):
 		if not self.dizzy:
 			self.dizzy=1

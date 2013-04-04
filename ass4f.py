@@ -6,6 +6,7 @@ if not pygame.mixer: print 'Warning: sound disabled'
 from utils import *
 from modes import ModeManager, GameMode, SimpleMode
 from characters import *
+from char import CharacterManager
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -52,9 +53,12 @@ def main():
   whiff_sound = load_sound('bubbles.wav')
   stab_sound = load_sound('bubbleshit.wav')
   sharkManager = SharkManager()
+  sharkgroup = sharkManager.sharkGroup()
   for character in csv.DictReader( open( os.path.join( kDataDir, 'maze_characters.csv' ) ) ):
-    mermaid = Mermaid(character, sharkManager.sharkGroup(), sharkManager)
+    mermaid = Mermaid(character, sharkgroup , sharkManager)
   mermaidg = pygame.sprite.Group( ( mermaid ) )
+  
+  charM = CharacterManager( mermaid, sharkgroup )
   
   while 1:
     clock.tick(15)
@@ -74,11 +78,12 @@ def main():
       elif event.type is MOUSEBUTTONUP:
         mermaid.unstab()
         
-    changeInDifficulty=mermaid.update()
-
-    sharkgroup = sharkManager.sharkGroup()
-    sharkgroup.update()
-    
+    changeInDifficulty=charM.update()
+    if (changeInDifficulty):
+      sharkgroup.empty()
+      sharkgroup = sharkManager.sharkGroup()
+      charM.set_evils( sharkgroup )
+    #sharkgroup.update()
     if(difficulty=="easy"):
       screen.blit(backgroundEasy, (0,0))
     elif(difficulty=="normal"):
