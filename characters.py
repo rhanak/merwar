@@ -39,7 +39,7 @@ class BadGuyCollider(threading.Thread):
     self.collided = collided
   
   def setGroup(self, group):
-    self.group = group
+    self.group = group.copy()
   
   def run(self):
     while True:
