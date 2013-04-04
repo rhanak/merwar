@@ -9,12 +9,13 @@ class SharkManager():
   def __init__(self):
     self.numSharks = 3
     self.sharks = None
-    
+    self.difficulty = difficulty
     def collided(x): x.speed[0] = 0
     
-    b = BadGuyCollider(self.sharkGroup(), collided)
-    b.daemon = True
-    b.start()
+    self.b = BadGuyCollider(collided)
+    self.b.setGroup(self.sharkGroup())
+    self.b.daemon = True
+    self.b.start()
 
   def sharkGroup(self):
     global difficulty
@@ -25,18 +26,21 @@ class SharkManager():
     if(difficulty=="hard"):
       self.numSharks = 6
     
-    if(self.sharks is None):
+    if(self.sharks is None or self.difficulty != difficulty):
       self.sharks = pygame.sprite.Group()
       for i in range(self.numSharks):
        self.sharks.add(Shark())
+      self.b.setGroup(self.sharks)
     return self.sharks 
   
 class BadGuyCollider(threading.Thread):
-  def __init__(self, group, collided):
+  def __init__(self, collided):
     threading.Thread.__init__(self)
-    self.group = group.copy()
     self.collided = collided
-
+  
+  def setGroup(self, group):
+    self.group = group
+  
   def run(self):
     while True:
       sprites = self.group.sprites()
