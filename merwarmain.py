@@ -48,8 +48,8 @@ def main():
 	select_screen(screen)
 
 	game_engine = GameEngine(screen)
-	backgrounds = game_engine.load_backgrounds()
-	screen.blit(backgrounds[1],(0,0))
+	background = game_engine.get_opening_screen()
+	screen.blit(background,(0,0))
 	pygame.display.flip()
 
 	clock = pygame.time.Clock()

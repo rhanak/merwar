@@ -17,17 +17,20 @@ class GameEngine():
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]
 		self.screen.blit(background, (0,0))
-		pygame.display.flip()
+		'''pygame.display.flip()'''
 
 	def load_backgrounds(self):
-		e0 = pygame.image.load(path_rejoin('data/backgrounds/undertheseaeasy.png')).convert()
-		n0 = pygame.image.load(path_rejoin('data/backgrounds/underthesea.png')).convert()
-		h0 = pygame.image.load(path_rejoin('data/backgrounds/undertheseahard.png')).convert()
+		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()
+		n0 = pygame.image.load(path_rejoin('data/backgrounds/n0.png')).convert()
+		h0 = pygame.image.load(path_rejoin('data/backgrounds/h0.png')).convert()
 		e1 = pygame.image.load(path_rejoin('data/backgrounds/e1.png')).convert()
 		n1 = pygame.image.load(path_rejoin('data/backgrounds/n1.png')).convert()
 		h1 = pygame.image.load(path_rejoin('data/backgrounds/h1.png')).convert()
-		background_list = [e1,n1,h1]
+		background_list = [e0,n0,h0,e1,n1,h1]
 		return background_list
+		
+	def get_opening_screen(self):
+		return self.backgrounds[1]
 		
 	def load_enemy_parameters(self):
 		enemies_list = []
