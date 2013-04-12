@@ -3,7 +3,7 @@ from pygame.locals import *
 from utils import *
 
 class Mermaid( pygame.sprite.Sprite ):
-	def __init__( self, props, enemies, manager ):
+	def __init__( self, props):
 		pygame.sprite.Sprite.__init__( self )
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
@@ -22,8 +22,7 @@ class Mermaid( pygame.sprite.Sprite ):
 		self.rect.top = int( props['start y'] )
 		self.rect.left = int( props['start x'] )
 		self.inited = True
-		self.enemyManager = manager
-		self.enemies = enemies
+		self.changeDifficulties = 0
 
 	def _update_image( self, frame_index ):
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
@@ -33,7 +32,6 @@ class Mermaid( pygame.sprite.Sprite ):
 
 	def update( self):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
-		global difficulty
 		#move mermaid to mouse position
 		mouse_position= pygame.mouse.get_pos()
 		'''
@@ -54,39 +52,9 @@ class Mermaid( pygame.sprite.Sprite ):
 		newpos = self.rect.move(self.velocity)
 		self.clampx(newpos, 0, 900)
 		self.rect= newpos
-		'''
-		difficulty changes
-		'''
-		self.changeDifficulties = 0
-		if(self.rect.top<30 and difficulty=="normal"):
-			self.rect.bottom = 590
-			self.rect.left = 100
-			difficulty = "easy"
-			self = Mermaid(self.properties,self.enemies,self.enemyManager)
-			self.changeDifficulties = 1
-		elif(self.rect.top<30 and difficulty=="hard"):
-			self.rect.bottom = 590
-			self.rect.left = 100
-			difficulty = "normal"
-			self = Mermaid(self.properties,self.enemies,self.enemyManager)
-			self.changeDifficulties = 1
-		elif(self.rect.bottom>600 and difficulty=="normal"):
-			self.rect.top = 40
-			self.rect.left = 100
-			difficulty = "hard"
-			self = Mermaid(self.properties,self.enemies,self.enemyManager)
-			self.changeDifficulties = 1
-		elif(self.rect.bottom>600 and difficulty=="easy"):
-			self.rect.top = 40
-			self.rect.left = 100
-			difficulty = "normal"
-			self = Mermaid(self.properties,self.enemies,self.enemyManager)
-			self.changeDifficulties = 1
+		
 		self.clampy(self.rect, 0, 630)
 		
-		#self.rect.midtop= mouse_position	
-		
-		return self.changeDifficulties
 		
 	def stab(self, target):
 		if not self.stabbing:

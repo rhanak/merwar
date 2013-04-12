@@ -56,10 +56,6 @@ def main():
 	whiff_sound = load_sound('bubbles.wav')
 	stab_sound = load_sound('bubbleshit.wav')
 
-	for character in csv.DictReader( open( os.path.join( kDataDir, 'maze_characters.csv' ) ) ):
-		mermaid = Mermaid(character,game_engine, None)
-	mermaidg = pygame.sprite.Group( ( mermaid ) )
-
 	while 1:
 		clock.tick(15)
 		
@@ -70,12 +66,12 @@ def main():
 				sys.exit("Quit.") 
 			elif event.type == MOUSEBUTTONDOWN:
 				whiff_sound.play()
-			elif event.type is MOUSEBUTTONUP:
-				mermaid.unstab()
+			#elif event.type is MOUSEBUTTONUP:
+			#	mermaid.unstab()
 				
 		game_engine.update()
-		mermaid.update()
-		mermaidg.draw(screen)
+		#mermaid.update()
+		#mermaidg.draw(screen)
 		pygame.display.flip()
 
 if __name__== '__main__': main()

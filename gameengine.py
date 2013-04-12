@@ -2,10 +2,13 @@ import os, pygame, json, random, csv, math
 from pygame.locals import *
 from utils import *
 from mermaid import *
+from charmanager import *
+
+kDataDir = 'data'
+kGlobals = 'globals.json'
 
 class GameEngine():
 	def __init__(self,screen):
-		self.difficulty = "normal"
 		self.page_num = 0
 		self.curr_list_num = 1
 		self.curr_num_enemies = 0
@@ -14,9 +17,17 @@ class GameEngine():
 		self.backgrounds = self.load_backgrounds()
 		self.enemy_list = self.load_enemy_parameters()
 		
+		for character in csv.DictReader( open( os.path.join( kDataDir, 'maze_characters.csv' ) ) ):
+			mermaid = Mermaid(character)
+		mermaidg = pygame.sprite.Group( ( mermaid ) )
+		
+		self.char_manager = CharManager(mermaid, pygame.sprite.Group())
+		
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]
 		self.screen.blit(background, (0,0))
+		diff = self.char_manager.update()
+		self.change_difficulty(diff)
 		pygame.display.flip()
 
 	def load_backgrounds(self):
@@ -35,22 +46,15 @@ class GameEngine():
 			enemies_list.append(difficulty['page 1'])
 		return enemies_list
 		
-	def change_difficulty(self, upOrDown):
-		'''upOrDown is a boolean value. 0 denotes up; 1 denotes down.'''
-		if((self.difficulty=="easy" and not upOrDown) or (self.difficulty=="hard" and upOrDown)):
-			return
-		if(self.difficulty=="easy" and upOrDown):
-			self.difficulty = "normal"
-			self.curr_list_num+=1
-		elif(self.difficulty=="hard" and not upOrDown):
-			self.difficulty = "normal"
-			self.curr_list_num-=1
-		elif(self.difficulty=="normal" and upOrDown):
-			self.difficulty = "hard"
-			self.curr_list_num+=1
-		elif(self.difficulty=="normal" and not upOrDown):
-			self.difficulty = "easy"
-			self.curr_list_num-=1
+	def change_difficulty(self, diff):
+		'''upOrDown is a boolean value. 1 denotes up; 0 denotes down.'''
+		change, upOrDown = diff
+		if (change):
+			if(upOrDown):
+				self.curr_list_num+=1
+			else:
+				self.curr_list_num-=1
+			
 		self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
 		pygame.display.flip()
 		

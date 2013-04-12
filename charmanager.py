@@ -19,7 +19,33 @@ class CharManager():
 	def update( self ):
 		self.evil_collide()
 		self.evil.update()
-		return self.prot.update()
+		self.prot.update()
+		return self.difficulty()
+	
+	def difficulty(self):
+		prot = self.prot
+		# Protaginist going to an easier level
+		if(prot.rect.top<30):
+			prot.rect.bottom = 590
+			prot.rect.left = 100
+			if(self.currentdifficulty=="normal"):
+				self.currentdifficulty = "easy"
+			elif(self.currentdifficulty=="hard"):
+				self.currentdifficulty = "normal"
+			#self = Mermaid(self.properties,self.enemies,self.enemyManager)
+			return (True, False)
+		# Nah they are up for something harder
+		elif(prot.rect.bottom>600):
+			prot.rect.top = 40
+			prot.rect.left = 100
+			if(self.currentdifficulty=="normal"):
+				self.currentdifficulty = "hard"
+			elif(self.currentdifficulty=="easy"):
+				self.currentdifficulty = "normal"
+			#self = Mermaid(self.properties,self.enemies,self.enemyManager)
+			return (True,True)
+		# No change in difficulty 
+		return (False, False)
 		
 	def set_evils( self, evils):
 		self.evil = evils
