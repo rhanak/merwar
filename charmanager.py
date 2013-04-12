@@ -6,6 +6,7 @@ class CharManager():
 	def __init__( self, protagonist, evils):
 		self.prot = protagonist
 		self.evil = evils
+		self.items = 0
 		
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
@@ -47,8 +48,14 @@ class CharManager():
 		# No change in difficulty 
 		return (False, False)
 		
-	def set_evils( self, evils):
-		self.evil = evils
+	def set_evils( self, num_enemies, type_enemies):
+		evil.clear()
+		'''add in type differences'''
+		for x in num_enemies:
+			evil.add(Shark())
+		
+	def set_items(self, item_num):
+		self.items = createNewItems(item_num)
 				
 	def evil_helper(self, spriteA, spriteB):
 		spriteA.interactWith(spriteB, None)

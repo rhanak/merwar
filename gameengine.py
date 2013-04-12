@@ -15,7 +15,7 @@ class GameEngine():
 		self.curr_type_enemies = "none"
 		self.screen = screen
 		self.backgrounds = self.load_backgrounds()
-		self.enemy_list = self.load_enemy_parameters()
+		self.assets_list = self.load_enemy_parameters()
 		
 		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
 			mermaid = Mermaid(character)
@@ -43,10 +43,19 @@ class GameEngine():
 		return self.backgrounds[1]
 		
 	def load_enemy_parameters(self):
-		enemies_list = []
+		assets_list = []
 		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
-			enemies_list.append(difficulty['page 1'])
-		return enemies_list
+			assets_list.append(difficulty['page 1'])
+		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
+			assets_list.append(difficulty['page 2'])
+		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
+			assets_list.append(difficulty['page 3'])
+		return assets_list
+		
+	def read_current_assets(self):	
+		assets = self.assets_list.split('/',2)
+		self.char_manager.set_evils(assets[0],assets[1])
+		self.char_manager.set_items(assets[2])
 		
 	def change_difficulty(self, diff):
 		'''upOrDown is a boolean value. 1 denotes up; 0 denotes down.'''
