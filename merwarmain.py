@@ -70,8 +70,6 @@ def main():
 			#	mermaid.unstab()
 				
 		game_engine.update()
-		#mermaid.update()
-		#mermaidg.draw(screen)
 		pygame.display.flip()
 
 if __name__== '__main__': main()
