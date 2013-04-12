@@ -19,16 +19,15 @@ class GameEngine():
 		
 		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
 			mermaid = Mermaid(character)
-		self.mermaidg = pygame.sprite.Group( ( mermaid ) )
 		
 		self.char_manager = CharManager(mermaid, pygame.sprite.Group())
 		
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]
 		self.screen.blit(background, (0,0))
-		self.mermaidg.draw(self.screen)
 		diff = self.char_manager.update()
 		self.change_difficulty(diff)
+		self.char_manager.draw(self.screen)
 
 	def load_backgrounds(self):
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()

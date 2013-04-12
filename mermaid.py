@@ -34,27 +34,32 @@ class Mermaid( pygame.sprite.Sprite ):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
 		#move mermaid to mouse position
 		mouse_position= pygame.mouse.get_pos()
-		'''
-		velocity changes
-		'''
+		'''velocity changes'''
+		x_amt = y_amt = 0.0
+		ms = self.max_speed
 		pressed = pygame.key.get_pressed()
 		if pressed[ K_RIGHT ]:
-			self.angle += math.pi * 3 / 180
+			x_amt += ms
 		if pressed[ K_LEFT ]:
-			self.angle -= math.pi * 3 / 180 #may need to tweak these two turning rates ^
+			x_amt -= ms
 		if pressed[ K_DOWN ]:
-			self.velocity[0] -= self.accel * math.cos(self.angle)
-			self.velocity[1] -= self.accel * math.sin(self.angle)
+			y_amt += ms
 		if pressed[ K_UP ]:
-			self.velocity[0] += self.accel * math.cos(self.angle)
-			self.velocity[1] += self.accel * math.sin(self.angle)
+			y_amt -= ms
+		
+		self.velocity = [x_amt, y_amt]
+		
 		self.clampvelocity()
 		newpos = self.rect.move(self.velocity)
 		self.clampx(newpos, 0, 900)
-		self.rect= newpos
+
 		
-		self.clampy(self.rect, 0, 630)
+		self.clampy(newpos, 0, 630)
 		
+		self.rect = newpos
+		'''
+		difficulty changes
+		'''
 		
 		
 	def stab(self, target):

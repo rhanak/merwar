@@ -6,6 +6,7 @@ class CharManager():
 	def __init__( self, protagonist, evils):
 		self.prot = protagonist
 		self.evil = evils
+		self.protg = pygame.sprite.GroupSingle( self.prot )
 		
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
@@ -21,6 +22,11 @@ class CharManager():
 		self.evil.update()
 		self.prot.update()
 		return self.difficulty()
+		
+	def draw( self, screen ):
+		self.protg.draw( screen )
+		self.evil.draw( screen )
+		#pygame.display.flip() 
 	
 	def difficulty(self):
 		prot = self.prot
