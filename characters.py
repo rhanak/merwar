@@ -57,31 +57,6 @@ class Shark(pygame.sprite.Sprite):
 			self.dizzy=1
 			self.original= self.image;
 
-class CharacterManager():
-	def __init__( self, protagonist, evils):
-		self.prot = protagonist
-		self.evil = evils
-		
-	def evil_collide( self ):
-		ev_copy = self.evil.copy()
-		ev_sprites = ev_copy.sprites()
-		for sprite in ev_sprites:
-			ev_copy.remove( sprite )
-			listc = pygame.sprite.spritecollide( sprite, ev_copy, dokill = False)
-			for clsn in listc:
-				self.evil_helper(sprite, clsn)
-	
-	def update( self ):
-		self.evil_collide()
-		self.evil.update()
-		return self.prot.update()
-		
-	def set_evils( self, evils):
-		self.evil = evils
-				
-	def evil_helper(self, spriteA, spriteB):
-		spriteA.joinWith(spriteB, None)
-
 class Fighter ( pygame.sprite.Sprite ):
 	def __init__( self, props ):
 		pygame.sprite.Sprite.__init__( self )

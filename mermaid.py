@@ -24,7 +24,6 @@ class Mermaid( pygame.sprite.Sprite ):
 		self.inited = True
 		self.enemyManager = manager
 		self.enemies = enemies
-		self.changeDifficulties = 0
 
 	def _update_image( self, frame_index ):
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
