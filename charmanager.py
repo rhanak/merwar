@@ -32,26 +32,31 @@ class CharManager():
 	
 	def difficulty(self):
 		prot = self.prot
+		changeDifficulty = False
 		# Protaginist going to an easier level
 		if(prot.rect.top<30):
 			prot.rect.bottom = 590
 			prot.rect.left = 100
 			if(self.currentdifficulty=="normal"):
+				changeDifficulty = True
 				self.currentdifficulty = "easy"
 			elif(self.currentdifficulty=="hard"):
+				changeDifficulty = True
 				self.currentdifficulty = "normal"
 			#self = Mermaid(self.properties,self.enemies,self.enemyManager)
-			return (True, False)
+			return (changeDifficulty, False)
 		# Nah they are up for something harder
 		elif(prot.rect.bottom>600):
 			prot.rect.top = 40
 			prot.rect.left = 100
 			if(self.currentdifficulty=="normal"):
+				changeDifficulty = True
 				self.currentdifficulty = "hard"
 			elif(self.currentdifficulty=="easy"):
+				changeDifficulty = True
 				self.currentdifficulty = "normal"
 			#self = Mermaid(self.properties,self.enemies,self.enemyManager)
-			return (True,True)
+			return (changeDifficulty,True)
 		# No change in difficulty 
 		return (False, False)
 		
