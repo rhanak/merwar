@@ -3,6 +3,7 @@ from pygame.locals import *
 from utils import *
 from mermaid import *
 from charmanager import *
+from characters import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -20,7 +21,12 @@ class GameEngine():
 		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
 			mermaid = Mermaid(character)
 		
-		self.char_manager = CharManager(mermaid, pygame.sprite.Group())
+		# Add some sharks
+		sharks = []
+		for i in range(6):
+			sharks.append(Shark())
+		
+		self.char_manager = CharManager(mermaid, pygame.sprite.RenderPlain(sharks))
 		
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]
@@ -65,9 +71,6 @@ class GameEngine():
 				self.curr_list_num+=1
 			else:
 				self.curr_list_num-=1
-			
-		self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
-		pygame.display.flip()
 		
 	def change_page(self, leftOrRight):
 		'''leftOrRight is a boolean value. 0 denotes left; 1 denotes right.'''

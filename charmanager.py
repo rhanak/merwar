@@ -28,7 +28,6 @@ class CharManager():
 	def draw( self, screen ):
 		self.protg.draw( screen )
 		self.evil.draw( screen )
-		#pygame.display.flip() 
 	
 	def difficulty(self):
 		prot = self.prot
@@ -70,4 +69,4 @@ class CharManager():
 		self.items = createNewItems(item_num)
 				
 	def evil_helper(self, spriteA, spriteB):
-		spriteA.interactWith(spriteB, None)
+		spriteA.joinWith(spriteB, None)
