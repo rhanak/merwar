@@ -26,7 +26,10 @@ class Shark(pygame.sprite.Sprite):
 			self.velocity[0]=-self.velocity[0]
 			self.velocity[1]=self.velocity[1]*random.randrange(1,3)
 			newpos=self.rect.move(self.velocity)
-			self.image = pygame.transform.flip(self.image,1,0)
+			
+			# TODO Make the shark flip without actually flipping too many times
+			
+			#self.image = pygame.transform.flip(self.image,1,0)
 		if self.rect.top<self.area.top:
 			self.velocity[1]=2
 			newpos=self.rect.move(self.velocity)
@@ -48,8 +51,11 @@ class Shark(pygame.sprite.Sprite):
 		
 	def joinWith(self, other, dims):
 		new_speed = other.velocity
-		if new_speed[0] * self.velocity[0] < 0:
-			self.image = pygame.transform.flip(self.image,1,0)
+		
+		# TODO need to actual make the sharks join together and follow each other
+		
+		#if new_speed[0] * self.velocity[0] < 0:
+			#self.image = pygame.transform.flip(self.image,1,0)
 		
 		
 	def stabbed(self):
