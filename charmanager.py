@@ -1,14 +1,26 @@
 import os, pygame, json, random, csv, math
 from pygame.locals import *
+from characters import *
+from mermaid import *
 from utils import *
 
+kDataDir = 'data'
+kGlobals = 'globals.json'
+
 class CharManager():
-	def __init__( self, protagonist, evils):
-		self.prot = protagonist
-		self.evil = evils
+	def __init__( self):
+		self.propsfiles = []
+		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
+			self.propsfiles.append(character)
+		mermaid = Mermaid(self.propsfiles[0])
+		dfm = Enemy(self.propsfiles[1])
+	
+		self.prot = mermaid
+		self.evil = pygame.sprite.Group()
 		self.items = 0
 		self.protg = pygame.sprite.GroupSingle( self.prot )
 		self.currentdifficulty = "normal"
+		self.evil.add(dfm)
 		
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
@@ -21,7 +33,7 @@ class CharManager():
 	
 	def update( self ):
 		self.evil_collide()
-		self.evil.update()
+		self.evil.update(self.prot.get_position())
 		self.prot.update()
 		return self.difficulty()
 		

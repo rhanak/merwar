@@ -16,11 +16,7 @@ class GameEngine():
 		self.screen = screen
 		self.backgrounds = self.load_backgrounds()
 		self.assets_list = self.load_enemy_parameters()
-		
-		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
-			mermaid = Mermaid(character)
-		
-		self.char_manager = CharManager(mermaid, pygame.sprite.Group())
+		self.char_manager = CharManager()
 		
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]

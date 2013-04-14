@@ -96,3 +96,6 @@ class Mermaid( pygame.sprite.Sprite ):
 			pos.top = top
 		elif pos.bottom > bottom:
 			pos.bottom = bottom
+
+	def get_position(self):
+		return self.rect.center

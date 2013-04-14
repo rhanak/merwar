@@ -57,74 +57,59 @@ class Shark(pygame.sprite.Sprite):
 			self.dizzy=1
 			self.original= self.image;
 
-class Fighter ( pygame.sprite.Sprite ):
+class Enemy( pygame.sprite.Sprite ):
 	def __init__( self, props ):
 		pygame.sprite.Sprite.__init__( self )
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
 		self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
 		self.stabbing = 0
+		self.velocity = [0.0,0.0]
 		self._update_image( 0 )
 		self.rect = self.image.get_rect()
 		self.rect.top = int( props['start y'] )
 		self.rect.left = int( props['start x'] )
+		#Mode 0 is 'tracking mode' in which the enemy attempts to close the distance between itself and Lerelei
+		#Mode 1 is 'combat mode' in which the enemy maintains distance from Lorelei attempts to attack her
+		self.mode = 0
 		
 	def _update_image( self, frame_index ):
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
 		self.frame_index = frame_index
 		
-	def update( self):
+	def update( self, pos):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
-		
-	def attack(self, key):
-		pass
-		
-class ProtagonistMermaid( Fighter ):
-	def __init__( self, props ):
-		Fighter.__init__( self, props)
-		self.speed = [0,0]
+		if(not self.mode):
+			self.track(pos)
+		else:
+			self.combat(pos)
 	
-	def update(self):
-		Fighter.update(self)
-		pressed = pygame.key.get_pressed()
-		if pressed[ K_RIGHT ]:
-			self.angle += math.pi * 3 / 180
-		if pressed[ K_LEFT ]:
-			self.angle -= math.pi * 3 / 180 #may need to tweak these two turning rates ^
-		if pressed[ K_DOWN ]:
-			self.speed[0] -= self.accel * math.cos(self.angle)
-			self.speed[1] -= self.accel * math.sin(self.angle)
-		if pressed[ K_UP ]:
-			self.speed[0] += self.accel * math.cos(self.angle)
-			self.speed[1] += self.accel * math.sin(self.angle)
-	
-	def attack(self):
-		pass
-	def defend(self):
-		pass
-class DarkFemaleMermaid( Fighter ):
-	def __init__(self):
-		pass
-	def update(self):
-		pass
-	def trackProtagonist(self):
-		pass
-	def dazed(self):
-		pass		
-	def attack(self):
-		pass
-	def defend(self):
-		pass
-class DarkMaleMermaid( Fighter ):
-	def __init__(self):
-		pass
-	def update(self):
-		pass
-	def trackProtagonist(self):
-		pass
-	def dazed(self):
-		pass
-	def attack(self):
-		pass
-	def defend(self):
-		pass
+	def track(self,pos):
+		if(abs(self.rect.center[0]-pos[0])<200 and abs(self.rect.center[1]-pos[1])<100):
+			self.mode = 1
+		elif(abs(self.rect.center[0]-pos[0])<200):
+			if(self.rect.center[1]>pos[1]):
+				self.velocity[1]=-2
+			elif(abs(self.rect.center[1])<pos[1]):
+				self.velocity[1]=2
+		elif(abs(self.rect.center[1]-pos[1])<100):
+			if(self.rect.center[0]>pos[0]):
+				self.velocity[0]=-2
+			elif(self.rect.center[0]<pos[0]):
+				self.velocity[0]=2
+		else:
+			if(self.rect.center[0]>pos[0]):
+				self.velocity[0]=-2
+			elif(self.rect.center[0]<pos[0]):
+				self.velocity[0]=2
+			if(self.rect.center[1]>pos[1]):
+				self.velocity[1]=-2
+			elif(self.rect.center[1]<pos[1]):
+				self.velocity[1]=2
+		newpos = self.rect.move(self.velocity)
+		self.rect = newpos
+		
+	def combat(self,pos):
+		if(abs(self.rect.center[0]-pos[0])>200 or abs(self.rect.center[1]-pos[1])>100):
+			self.mode = 0
+		self.velocity = [0.0,0.0]
