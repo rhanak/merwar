@@ -8,15 +8,19 @@ kDataDir = 'data'
 kGlobals = 'globals.json'
 
 class CharManager():
-	def __init__( self):
+	def __init__( self ):
 		self.propsfiles = []
 		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
 			self.propsfiles.append(character)
 		mermaid = Mermaid(self.propsfiles[0])
 		dfm = Enemy(self.propsfiles[1])
-	
+		
+		sharks = []
+		for i in range(6):
+			sharks.append(Shark())
+		
 		self.prot = mermaid
-		self.evil = pygame.sprite.Group()
+		self.evil = pygame.sprite.RenderPlain(sharks)
 		self.items = 0
 		self.protg = pygame.sprite.GroupSingle( self.prot )
 		self.currentdifficulty = "normal"
@@ -40,7 +44,6 @@ class CharManager():
 	def draw( self, screen ):
 		self.protg.draw( screen )
 		self.evil.draw( screen )
-		#pygame.display.flip() 
 	
 	def difficulty(self):
 		prot = self.prot
@@ -82,4 +85,4 @@ class CharManager():
 		self.items = createNewItems(item_num)
 				
 	def evil_helper(self, spriteA, spriteB):
-		spriteA.interactWith(spriteB, None)
+		spriteA.joinWith(spriteB, None)

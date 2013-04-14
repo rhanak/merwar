@@ -14,7 +14,7 @@ class Shark(pygame.sprite.Sprite):
 		self.move = self.velocity
 		self.dizzy = 0
 		
-	def update(self):
+	def update(self, position):
 		if self.dizzy:
 			self._spin_()
 		else:
@@ -113,3 +113,6 @@ class Enemy( pygame.sprite.Sprite ):
 		if(abs(self.rect.center[0]-pos[0])>200 or abs(self.rect.center[1]-pos[1])>100):
 			self.mode = 0
 		self.velocity = [0.0,0.0]
+		
+	def joinWith(self, other, dims):
+		blah = 0

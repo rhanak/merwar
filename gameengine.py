@@ -3,6 +3,7 @@ from pygame.locals import *
 from utils import *
 from mermaid import *
 from charmanager import *
+from characters import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -17,7 +18,6 @@ class GameEngine():
 		self.backgrounds = self.load_backgrounds()
 		self.assets_list = self.load_enemy_parameters()
 		self.char_manager = CharManager()
-		
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]
 		self.screen.blit(background, (0,0))
@@ -61,9 +61,6 @@ class GameEngine():
 				self.curr_list_num+=1
 			else:
 				self.curr_list_num-=1
-			
-		self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
-		pygame.display.flip()
 		
 	def change_page(self, leftOrRight):
 		'''leftOrRight is a boolean value. 0 denotes left; 1 denotes right.'''
