@@ -4,6 +4,7 @@ from utils import *
 from mermaid import *
 from charmanager import *
 from characters import *
+from health import HealthProtagonist
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -18,12 +19,23 @@ class GameEngine():
 		self.backgrounds = self.load_backgrounds()
 		self.assets_list = self.load_enemy_parameters()
 		self.char_manager = CharManager()
+		self.health_protagonist = HealthProtagonist()
+		self.healthbars = pygame.sprite.RenderPlain((self.health_protagonist))
+
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]
 		self.screen.blit(background, (0,0))
 		diff = self.char_manager.update()
 		self.change_difficulty(diff)
 		self.char_manager.draw(self.screen)
+		self.healthbars.update()
+		self.healthbars.draw(self.screen)
+
+		# Just showing how you can test the health bar for the protagonist
+		for event in pygame.event.get():
+			if event.type is MOUSEBUTTONUP:
+				self.health_protagonist.dec_health()
+		
 
 	def load_backgrounds(self):
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()
