@@ -30,7 +30,6 @@ class HealthProtagonist(pygame.sprite.Sprite):
 		self.health_max_image.fill((0,0,0))
 		self.health_max_image.fill((255,255,0), pygame.Rect(0,0, health_width, self.health_bar_height))
 		self.image.blit(self.health_max_image, self.health_rect_max)
-		print "..."
 
 	def set_health(self, health):
 		if(health < 0 or health > 100):
@@ -38,5 +37,5 @@ class HealthProtagonist(pygame.sprite.Sprite):
 
 		self.health = health / 100
 
-	def dec_health(self):
+	def dec_health(self, ):
 		self.set_health((self.health - .05) * 100)
