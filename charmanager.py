@@ -76,6 +76,7 @@ class CharManager():
 				self.currentdifficulty = "normal"
 			#self = Mermaid(self.properties,self.enemies,self.enemyManager)
 			return (changeDifficulty,True)
+		self.push_new_rect()
 		# No change in difficulty 
 		return (False, False)
 	
