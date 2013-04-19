@@ -64,8 +64,9 @@ class Shark(pygame.sprite.Sprite):
 			self.original= self.image;
 
 class Enemy( pygame.sprite.Sprite ):
-	def __init__( self, props ):
+	def __init__( self, props, charmanager ):
 		pygame.sprite.Sprite.__init__( self )
+		self.manager = charmanager
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
 		self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
@@ -78,6 +79,9 @@ class Enemy( pygame.sprite.Sprite ):
 		#Mode 0 is 'tracking mode' in which the enemy attempts to close the distance between itself and Lerelei
 		#Mode 1 is 'combat mode' in which the enemy maintains distance from Lorelei attempts to attack her
 		self.mode = 0
+		self.recovering = 0
+		self.recoverytimer = 0
+		self.preparedToAttack = 0
 		
 	def _update_image( self, frame_index ):
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
@@ -85,33 +89,40 @@ class Enemy( pygame.sprite.Sprite ):
 		
 	def update( self, pos):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
-		if(not self.mode):
-			self.track(pos)
+		if(not self.recovering):
+			if(not self.mode):
+				self.track(pos)
+			else:
+				self.combat(pos)
 		else:
-			self.combat(pos)
+			self.recoverytimer += 1
+			if(self.recoverytimer>50):
+				self.recovering = 0
+				self.recoverytimer = 0
+				self.preparedToAttack = 0
 	
 	def track(self,pos):
 		if(abs(self.rect.center[0]-pos[0])<200 and abs(self.rect.center[1]-pos[1])<100):
 			self.mode = 1
 		elif(abs(self.rect.center[0]-pos[0])<200):
 			if(self.rect.center[1]>pos[1]):
-				self.velocity[1]=-2
+				self.velocity[1]=-3
 			elif(abs(self.rect.center[1])<pos[1]):
-				self.velocity[1]=2
+				self.velocity[1]=3
 		elif(abs(self.rect.center[1]-pos[1])<100):
 			if(self.rect.center[0]>pos[0]):
-				self.velocity[0]=-2
+				self.velocity[0]=-3
 			elif(self.rect.center[0]<pos[0]):
-				self.velocity[0]=2
+				self.velocity[0]=3
 		else:
 			if(self.rect.center[0]>pos[0]):
-				self.velocity[0]=-2
+				self.velocity[0]=-3
 			elif(self.rect.center[0]<pos[0]):
-				self.velocity[0]=2
+				self.velocity[0]=3
 			if(self.rect.center[1]>pos[1]):
-				self.velocity[1]=-2
+				self.velocity[1]=-3
 			elif(self.rect.center[1]<pos[1]):
-				self.velocity[1]=2
+				self.velocity[1]=3
 		newpos = self.rect.move(self.velocity)
 		self.rect = newpos
 		
@@ -119,6 +130,31 @@ class Enemy( pygame.sprite.Sprite ):
 		if(abs(self.rect.center[0]-pos[0])>200 or abs(self.rect.center[1]-pos[1])>100):
 			self.mode = 0
 		self.velocity = [0.0,0.0]
+		if(self.preparedToAttack==0):
+			self.prepareToAttack()
+		if(self.preparedToAttack>10):
+			self.attack()
+			self.preparedToAttack = 0
+		else:
+			self.preparedToAttack += 1
+		
+	def prepareToAttack(self):
+		pull_back = load_sound('enemypullback.wav')
+		pull_back.play()
+		#animate pull back
+	
+	def attack(self):
+		miss = load_sound('bubbles.wav')
+		hit = load_sound('bubbleshit.wav')
+		continueAttack = not self.manager.checkDodgeStatus()
+		if(continueAttack):
+			#animate attack
+			#damage lerelei's health
+			hit.play()
+		else:
+			#animate attack
+			miss.play()
+		self.recovering = 1
 		
 	def joinWith(self, other, dims):
 		blah = 0
