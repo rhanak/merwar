@@ -104,3 +104,7 @@ class Mermaid( pygame.sprite.Sprite ):
 
 	def get_position(self):
 		return self.rect.center
+
+	def isDodging(self):
+		return 0
+

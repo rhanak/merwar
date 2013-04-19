@@ -13,7 +13,7 @@ class CharManager():
 		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
 			self.propsfiles.append(character)
 		mermaid = Mermaid(self.propsfiles[0])
-		dfm = Enemy(self.propsfiles[1])
+		dfm = Enemy(self.propsfiles[1], self)
 		
 		sharks = []
 		for i in range(6):
@@ -106,3 +106,7 @@ class CharManager():
 				
 	def evil_helper(self, spriteA, spriteB):
 		spriteA.joinWith(spriteB, None)
+		
+	def checkDodgeStatus(self):
+		return self.prot.isDodging()
+
