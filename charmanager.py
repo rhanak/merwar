@@ -23,10 +23,7 @@ class CharManager():
 		self.evil = pygame.sprite.RenderPlain(sharks)
 		self.items = 0
 		self.protg = pygame.sprite.GroupSingle( self.prot )
-		self.currentdifficulty = "normal"
 		self.evil.add(dfm)
-
-		self.newrect = pygame.Rect.copy( self.prot.rect )
 		
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
@@ -41,61 +38,77 @@ class CharManager():
 		self.evil_collide()
 		self.evil.update(self.prot.get_position())
 		self.prot.update()
-		return self.difficulty()
+		#return self.difficulty()
 		
 	def draw( self, screen ):
 		self.protg.draw( screen )
 		self.evil.draw( screen )
 	
-	def difficulty(self):
-		self.reset_new_rect()
-		prot = self.prot
-		changeDifficulty = False
-		# Protaginist going to an easier level
-		if(prot.rect.top<30):
-			if(self.currentdifficulty!="easy"):
-				self.newrect.bottom = 590
-				self.newrect.left = 100
-			if(self.currentdifficulty=="normal"):
-				changeDifficulty = True
-				self.currentdifficulty = "easy"
-			elif(self.currentdifficulty=="hard"):
-				changeDifficulty = True
-				self.currentdifficulty = "normal"
-			#self = Mermaid(self.properties,self.enemies,self.enemyManager)
-			return (changeDifficulty, False)
-		# Nah they are up for something harder
-		elif(prot.rect.bottom>600):
-			if(self.currentdifficulty!="hard"):
-				self.newrect.top = 40
-				self.newrect.left = 100
-			if(self.currentdifficulty=="normal"):
-				changeDifficulty = True
-				self.currentdifficulty = "hard"
-			elif(self.currentdifficulty=="easy"):
-				changeDifficulty = True
-				self.currentdifficulty = "normal"
-			#self = Mermaid(self.properties,self.enemies,self.enemyManager)
-			return (changeDifficulty,True)
-		self.push_new_rect()
-		# No change in difficulty 
-		return (False, False)
+	### NEW BORDER CHECKING POSITION UPDATE FUNCTIONS
+	### WHAT TO DO: 
+	### 1. 	Use atDiffBorder() and atPageBorder() to determine engine level changes
+	### 2.	Call move_prot_by_border_checks(diff, page) from engine,
+	### 	where diff and page, Bools, indicate whether they should change.
+	### ---Dale
+	def diffUpOrDown(self):
+		''' Vertical: return the rect.top value of where the mermaid should
+			end up IF difficulty changes. Difficulty changes are
+			tracked in the Game Engine now.
+		'''
+		if(self.prot.rect.top<10):
+			return (630 - self.prot.rect.height - 10)
+		elif(self.prot.rect.bottom>620):
+			return 20
+		return self.prot.rect.top
+	
+	def atDiffBorder(self):
+		''' Vertical: return -1 if protagonist collides with top border 
+					  return 1 if protagonist collides with bottom border
+					  0 if no collision. 1 and -1 evaluate to Boolean TRUE
+		'''
+		if(self.prot.rect.top<10):
+			return -1
+		elif(self.prot.rect.bottom>620):
+			return 1
+		return 0
+	
+	def pageLeftOrRight(self):
+		''' Horizontal: return the rect.left value of where the mermaid should
+			end up IF difficulty changes. Difficulty changes are
+			tracked in the Game Engine now.
+		'''
+		if(self.prot.rect.right>890):
+			return 20
+		if(self.prot.rect.left<10):
+			return (900 - self.prot.rect.width - 10)
+		return self.prot.rect.left
+	
+	def atPageBorder(self):
+		''' Horizontal: return -1 if protagonist collides with left border 
+						return 1 if protagonist collides with right border
+						0 if no collision. 1 and -1 evaluate to Boolean TRUE
+		'''
+		if (self.prot.rect.right>890): 
+			return 1
+		if (self.prot.rect.left<20):
+			return -1
+		return 0
 		
-	def pagecheck(self):
-		prot = self.prot
-		if(prot.rect.right>=900):
-			self.newrect.left = 30
-			return "right"
-		if(prot.rect.left<=0):
-			self.newrect.right = 870
-			return "left"
-		return None
-	
-	def push_new_rect(self):
-		self.prot.rect=self.newrect
-	
-	def reset_new_rect(self):
-		self.newrect = pygame.Rect.copy( self.prot.rect )
+	def move_protagonist(self, (left,top)):
+		self.prot.rect.left = left
+		self.prot.rect.top = top
+		
+	def move_prot_by_border_checks(self, diff, page):
+		''' Called from outside, this function will use
+			Difficulty and Page background changes ONLY if
+			the outside agent determines to change them by (DIFF, PAGE):Bools
+		'''
+		if(diff):
+			self.prot.rect.top = self.diffUpOrDown()
+		if(page):
+			self.prot.rect.left = self.pageLeftOrRight()
+		
+	####END NEW BORDER CHECKING CODE
 		
 	def set_evils( self, num_enemies, type_enemies):
 		evil.clear()

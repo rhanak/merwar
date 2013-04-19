@@ -34,13 +34,15 @@ class GameEngine():
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]
 		self.screen.blit(background, (0,0))
-		diff = self.char_manager.update()
-		self.change_page(self.char_manager.pagecheck())
-		self.change_difficulty(diff)
+		#self.change_difficulty(
+		self.char_manager.update() #)
+		#self.change_page(self.char_manager.pagecheck())
+		self.update_prot_with_border_checks()
 		self.char_manager.draw(self.screen)
 		self.healthbars.update()
 		self.healthbars.draw(self.screen)
 		self.update_timers()
+		pygame.display.flip()
 
 		# Just showing how you can test the health bar for the protagonist
 		for event in pygame.event.get():
@@ -52,8 +54,7 @@ class GameEngine():
 				self.whiff_sound.play()
 			elif event.type is MOUSEBUTTONUP:
 				self.health_protagonist.dec_health()
-		
-
+	
 	def load_backgrounds(self):
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()
 		n0 = pygame.image.load(path_rejoin('data/backgrounds/n0.png')).convert()
@@ -82,38 +83,40 @@ class GameEngine():
 		self.char_manager.set_evils(assets[0],assets[1])
 		self.char_manager.set_items(assets[2])
 		
-	def change_difficulty(self, diff):
-		'''upOrDown is a boolean value. 0 denotes up; 1 denotes down.'''
-		change, upOrDown = diff
+	def update_prot_with_border_checks(self):
+		''' Use more modular functions from charmanager to check borders
+			and update the protagonist appropriately '''
 		char_m = self.char_manager
-		if (change):
-			print "Up? ", upOrDown, "; curr_list_num: ", self.curr_list_num
-			if (not upOrDown) and ((self.curr_list_num % 3) > 0):
-				self.curr_list_num-=1
-				char_m.push_new_rect()
-			elif upOrDown and ((self.curr_list_num % 3) < 2):
-				self.curr_list_num+=1
-				char_m.push_new_rect()
-
-			self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
-			pygame.display.flip()
+		#### atDiffBorder/atPageBorder will give 0 if none needed, so won't add/subtract
+		diff_change = self.change_diff_by_offset(char_m.atDiffBorder())
+		page_change = self.change_page_by_offset(char_m.atPageBorder())
+		####
+		char_m.move_prot_by_border_checks(diff_change, page_change)
 		
-	def change_page(self, leftOrRight):
-		'''leftOrRight is "left" or "right". If NoneType, do nothing.'''
-		if not leftOrRight: return
-		print leftOrRight
-		if(leftOrRight == "left" and self.page_num > 0):
-			self.page_num -= 1
-			self.curr_list_num-=3
-		elif(leftOrRight == "right" and self.page_num < len(self.backgrounds)/3 - 1):
-			self.page_num += 1
-			self.curr_list_num += 3
-		#self.char_manager.push_new_rect()
-		self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
-		pygame.display.flip()
+	def change_diff_by_offset(self, num):
+		''' Attempt to change Difficulty by num.
+			Return TRUE if new difficulty valid, FALSE otherwise.
+		'''
+		diff = self.curr_list_num % 3
+		if((diff == 0 and num < 0) or (diff==2 and num > 0)): 
+			return False
+		self.curr_list_num += num
+		#print "Difficulty list val: ", self.curr_list_num
+		return True
+		
+	def change_page_by_offset(self, num):
+		''' Attempt to change Page by num.
+			Return TRUE if new page valid, FALSE otherwise.
+		'''
+		new_page_num = self.page_num + num
+		if(3 * new_page_num > (len(self.backgrounds)-1) or new_page_num < 0): return False
+		#print "Last page: ", (len(self.backgrounds)-1), "\tCurrent page: ", new_page_num
+		self.page_num = new_page_num
+		self.curr_list_num += 3*num
+		return True
 	
-	### I am wondering whether I could separate this into a new Class 	###
-	### ---DALE 		[TIMER CODE FOLLOWS]							###	
+	### I am wondering whether I could separate the below into a new Class 	###
+	### ---DALE 		[TIMER CODE FOLLOWS]								###	
 	def update_timers(self):
 		''' Called from the main update function, this will update and display 
 			the	timer for the currently active difficulty level '''
@@ -128,5 +131,4 @@ class GameEngine():
 		font_obj = pygame.font.SysFont("arial", 20, bold=True)
 		disp_text = font_obj.render(text, 1, (204, 102, 0))
 		self.screen.blit(disp_text, (x,y))
-		pygame.display.flip()
 
