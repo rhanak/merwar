@@ -70,12 +70,17 @@ class Enemy( pygame.sprite.Sprite ):
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
 		self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
+		self.attackPower = int( props['attack power'] )
+		self.defenseBoost = int( props['defense boost'] )
 		self.stabbing = 0
+		self.maxVelocity = int( props['velocity'] )
 		self.velocity = [0.0,0.0]
 		self._update_image( 0 )
 		self.rect = self.image.get_rect()
 		self.rect.top = int( props['start y'] )
 		self.rect.left = int( props['start x'] )
+		
+		
 		#Mode 0 is 'tracking mode' in which the enemy attempts to close the distance between itself and Lerelei
 		#Mode 1 is 'combat mode' in which the enemy maintains distance from Lorelei attempts to attack her
 		self.mode = 0
@@ -102,27 +107,28 @@ class Enemy( pygame.sprite.Sprite ):
 				self.preparedToAttack = 0
 	
 	def track(self,pos):
+		maxVelocity, negVelocity = self.maxVelocity, (-1*self.maxVelocity)
 		if(abs(self.rect.center[0]-pos[0])<200 and abs(self.rect.center[1]-pos[1])<100):
 			self.mode = 1
 		elif(abs(self.rect.center[0]-pos[0])<200):
 			if(self.rect.center[1]>pos[1]):
-				self.velocity[1]=-3
+				self.velocity[1]=negVelocity
 			elif(abs(self.rect.center[1])<pos[1]):
-				self.velocity[1]=3
+				self.velocity[1]=maxVelocity
 		elif(abs(self.rect.center[1]-pos[1])<100):
 			if(self.rect.center[0]>pos[0]):
-				self.velocity[0]=-3
+				self.velocity[0]=negVelocity
 			elif(self.rect.center[0]<pos[0]):
-				self.velocity[0]=3
+				self.velocity[0]=maxVelocity
 		else:
 			if(self.rect.center[0]>pos[0]):
-				self.velocity[0]=-3
+				self.velocity[0]=negVelocity
 			elif(self.rect.center[0]<pos[0]):
-				self.velocity[0]=3
+				self.velocity[0]=maxVelocity
 			if(self.rect.center[1]>pos[1]):
-				self.velocity[1]=-3
+				self.velocity[1]=negVelocity
 			elif(self.rect.center[1]<pos[1]):
-				self.velocity[1]=3
+				self.velocity[1]=maxVelocity
 		newpos = self.rect.move(self.velocity)
 		self.rect = newpos
 		

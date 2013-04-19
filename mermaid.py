@@ -22,6 +22,8 @@ class Mermaid( pygame.sprite.Sprite ):
 		self.rect.left = int( props['start x'] )
 		self.inited = True
 		self.changeDifficulties = 0
+		self.health = 100
+		self.dead = 0
 
 	def _update_image( self, frame_index ):
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
@@ -108,3 +110,12 @@ class Mermaid( pygame.sprite.Sprite ):
 	def isDodging(self):
 		return 0
 
+	def decreaseHealth(self, attackPower):
+		self.health-=attackPower
+		if(self.health<=0):
+			self.dead = 1
+		
+	def increaseHealth(self):
+		self.health+=10
+		if(self.health>100):
+			self.health = 100
