@@ -53,21 +53,10 @@ def main():
 	pygame.display.flip()
 
 	clock = pygame.time.Clock()
-	whiff_sound = load_sound('bubbles.wav')
-	stab_sound = load_sound('bubbleshit.wav')
+	
 
 	while 1:
 		clock.tick(15)
-		
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				sys.exit("Quit.") 
-			elif event.type == KEYDOWN and event.key == K_ESCAPE:
-				sys.exit("Quit.") 
-			elif event.type == MOUSEBUTTONDOWN:
-				whiff_sound.play()
-			#elif event.type is MOUSEBUTTONUP:
-			#	mermaid.unstab()
 				
 		game_engine.update()
 		pygame.display.flip()

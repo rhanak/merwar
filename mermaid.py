@@ -8,14 +8,13 @@ class Mermaid( pygame.sprite.Sprite ):
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
 		self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
-		self.velocity = [0.0,0.0]
+		self.velocity = [0,0]
 		self.stabbing = 0
 		#Dale Added These
 		self.angle = 0
 		self.inited = False
-		self.max_speed = 10.0
-		self.decay = 1.0
-		self.accel = 2.0;
+		self.max_speed = 15
+		self.decay = 3;
 		#end adds
 		self._update_image( 0 )
 		self.rect = self.image.get_rect()
@@ -32,27 +31,34 @@ class Mermaid( pygame.sprite.Sprite ):
 
 	def update( self):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
-		#move mermaid to mouse position
-		mouse_position= pygame.mouse.get_pos()
-		'''velocity changes'''
-		x_amt = y_amt = 0.0
+		
+		def sign( x ):
+			if x < 0: return -1
+			elif x > 0: return 1
+			return 0
+		
 		ms = self.max_speed
 		pressed = pygame.key.get_pressed()
-		if pressed[ K_RIGHT ]:
-			x_amt += ms
-		if pressed[ K_LEFT ]:
-			x_amt -= ms
-		if pressed[ K_DOWN ]:
-			y_amt += ms
-		if pressed[ K_UP ]:
-			y_amt -= ms
+		vel = self.velocity
+		if not (pressed[ K_RIGHT ] or pressed[ K_LEFT ]
+				or pressed[ K_DOWN ] or pressed[ K_UP ]):
+				self.velocity[0] -= sign(vel[0])*self.decay
+				self.velocity[1] -= sign(vel[1])*self.decay
+		else:
+			x_amt = y_amt = 0 
+			if pressed[ K_RIGHT ]:
+				x_amt += ms
+			if pressed[ K_LEFT ]:
+				x_amt -= ms
+			if pressed[ K_DOWN ]:
+				y_amt += ms
+			if pressed[ K_UP ]:
+				y_amt -= ms
+			self.velocity = [x_amt, y_amt]
 		
-		self.velocity = [x_amt, y_amt]
-		
-		self.clampvelocity()
+		self.angle = math.atan2(self.velocity[1], self.velocity[0])
 		newpos = self.rect.move(self.velocity)
 		self.clampx(newpos, 0, 900)
-
 		
 		self.clampy(newpos, 0, 630)
 		
@@ -60,7 +66,6 @@ class Mermaid( pygame.sprite.Sprite ):
 		'''
 		difficulty changes
 		'''
-		
 		
 	def stab(self, target):
 		if not self.stabbing:
@@ -99,6 +104,7 @@ class Mermaid( pygame.sprite.Sprite ):
 
 	def get_position(self):
 		return self.rect.center
-		
+
 	def isDodging(self):
 		return 0
+
