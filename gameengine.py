@@ -26,6 +26,7 @@ class GameEngine():
 		background = self.backgrounds[self.curr_list_num]
 		self.screen.blit(background, (0,0))
 		diff = self.char_manager.update()
+		self.change_page(self.char_manager.pagecheck())
 		self.change_difficulty(diff)
 		self.char_manager.draw(self.screen)
 		self.healthbars.update()
@@ -66,21 +67,30 @@ class GameEngine():
 		self.char_manager.set_items(assets[2])
 		
 	def change_difficulty(self, diff):
-		'''upOrDown is a boolean value. 1 denotes up; 0 denotes down.'''
+		'''upOrDown is a boolean value. 0 denotes up; 1 denotes down.'''
 		change, upOrDown = diff
+		char_m = self.char_manager
 		if (change):
-			if(upOrDown):
+			print "Up? ", upOrDown, "; curr_list_num: ", self.curr_list_num
+			if (not upOrDown) and ((self.curr_list_num % 3) > 0):
 				self.curr_list_num+=1
-			else:
+				char_m.push_new_rect()
+			elif upOrDown and ((self.curr_list_num % 3) < 2):
 				self.curr_list_num-=1
+				char_m.push_new_rect()
+			self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
+			pygame.display.flip()
 		
 	def change_page(self, leftOrRight):
-		'''leftOrRight is a boolean value. 0 denotes left; 1 denotes right.'''
-		if(not leftOrRight):
+		'''leftOrRight is "left" or "right". If NoneType, do nothing.'''
+		if not leftOrRight: return
+		print leftOrRight
+		if(leftOrRight == "left" and self.page_num > 0):
 			self.page_num -= 1
 			self.curr_list_num-=3
-		elif(leftOrRight):
-			self.page_num -= 1
+		elif(leftOrRight == "right" and self.page_num < len(self.backgrounds)/3):
+			self.page_num += 1
 			self.curr_list_num+=3
+		self.char_manager.push_new_rect()
 		self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
 		pygame.display.flip()

@@ -25,6 +25,7 @@ class CharManager():
 		self.protg = pygame.sprite.GroupSingle( self.prot )
 		self.currentdifficulty = "normal"
 		self.evil.add(dfm)
+		self.newrect = pygame.Rect.copy( self.prot.rect )
 		
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
@@ -46,12 +47,14 @@ class CharManager():
 		self.evil.draw( screen )
 	
 	def difficulty(self):
+		self.reset_new_rect()
 		prot = self.prot
 		changeDifficulty = False
 		# Protaginist going to an easier level
 		if(prot.rect.top<30):
-			prot.rect.bottom = 590
-			prot.rect.left = 100
+			if(self.currentdifficulty!="easy"):
+				self.newrect.bottom = 590
+				self.newrect.left = 100
 			if(self.currentdifficulty=="normal"):
 				changeDifficulty = True
 				self.currentdifficulty = "easy"
@@ -62,8 +65,9 @@ class CharManager():
 			return (changeDifficulty, False)
 		# Nah they are up for something harder
 		elif(prot.rect.bottom>600):
-			prot.rect.top = 40
-			prot.rect.left = 100
+			if(self.currentdifficulty!="easy"):
+				self.newrect.top = 40
+				self.newrect.left = 100
 			if(self.currentdifficulty=="normal"):
 				changeDifficulty = True
 				self.currentdifficulty = "hard"
@@ -74,6 +78,22 @@ class CharManager():
 			return (changeDifficulty,True)
 		# No change in difficulty 
 		return (False, False)
+	
+	def pagecheck(self):
+		prot = self.prot
+		if(prot.rect.right>=900):
+			self.newrect.left = 30
+			return "right"
+		if(prot.rect.left<=0):
+			self.newrect.right = 870
+			return "left"
+		return None
+	
+	def push_new_rect(self):
+		self.prot.rect=self.newrect
+	
+	def reset_new_rect(self):
+		self.newrect = pygame.Rect.copy( self.prot.rect )
 		
 	def set_evils( self, num_enemies, type_enemies):
 		evil.clear()
