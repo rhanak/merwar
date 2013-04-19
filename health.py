@@ -34,7 +34,7 @@ class HealthProtagonist(pygame.sprite.Sprite):
 
 	def set_health(self, health):
 		if(health < 0 or health > 100):
-			print "Error invalid value for health: " + health
+			print "Error invalid value for health: %d" % health
 
 		self.health = health / 100
 

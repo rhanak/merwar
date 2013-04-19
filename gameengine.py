@@ -21,6 +21,9 @@ class GameEngine():
 		self.char_manager = CharManager()
 		self.health_protagonist = HealthProtagonist()
 		self.healthbars = pygame.sprite.RenderPlain((self.health_protagonist))
+		
+		self.whiff_sound = load_sound('bubbles.wav')
+		#self.stab_sound = load_sound('bubbleshit.wav')
 
 	def update(self):
 		background = self.backgrounds[self.curr_list_num]
@@ -34,7 +37,13 @@ class GameEngine():
 
 		# Just showing how you can test the health bar for the protagonist
 		for event in pygame.event.get():
-			if event.type is MOUSEBUTTONUP:
+			if event.type == QUIT:
+				sys.exit("Quit.") 
+			elif event.type == KEYDOWN and event.key == K_ESCAPE:
+				sys.exit("Quit.") 
+			elif event.type == MOUSEBUTTONDOWN:
+				self.whiff_sound.play()
+			elif event.type is MOUSEBUTTONUP:
 				self.health_protagonist.dec_health()
 		
 
