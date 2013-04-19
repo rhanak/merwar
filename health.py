@@ -2,34 +2,45 @@ import os, pygame
 from pygame.locals import *
 from utils import *
 
-class HealthProtagonist(pygame.sprite.Sprite):
-	def __init__(self):
+class HealthContainer(pygame.sprite.Sprite):
+	def __init__(self, healthbar):
 		pygame.sprite.Sprite.__init__(self)
+		
 		screen = pygame.display.get_surface()
 		width = 150 
 		height = 30
+		
+		self.healthbar = healthbar
 		self.area = screen.get_rect()
 		self.rect = pygame.Rect(0, self.area.bottom - height, width, height)
-
 		self.image = pygame.Surface([width, height])
 		self.image.set_alpha(50)
 		self.image.fill((255,255,255))
-
-		self.health_bar_width = width - 25
-		self.health_bar_height = height/2
-
-		self.health_rect_max = pygame.Rect(5, 10, self.health_bar_width, self.health_bar_height)
-		self.health_max_image = pygame.Surface([self.health_bar_width, self.health_bar_height])
 		
+		self.rect_health = pygame.Rect(5, 10, healthbar.width, healthbar.height)
+		
+	def update(self):
+		self.healthbar.update()
+		
+		self.image.blit(self.healthbar.image, self.rect_health)
 
+class HealthBar(pygame.sprite.Sprite):
+	def __init__(self):
+		pygame.sprite.Sprite.__init__(self)
+
+		self.width = 125 
+		self.height = 15
+
+		self.image = pygame.Surface([self.width, self.height])
+		self.rect = self.image.get_rect()
+		
 		self.health = .9
 		
 	def update(self):
-		health_width = self.health_bar_width * self.health
+		health_width = self.width * self.health
 
-		self.health_max_image.fill((0,0,0))
-		self.health_max_image.fill((255,255,0), pygame.Rect(0,0, health_width, self.health_bar_height))
-		self.image.blit(self.health_max_image, self.health_rect_max)
+		self.image.fill((0,0,0))
+		self.image.fill((255,255,0), pygame.Rect(0,0, health_width, self.height))
 		print "..."
 
 	def set_health(self, health):

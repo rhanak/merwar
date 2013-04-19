@@ -4,7 +4,7 @@ from utils import *
 from mermaid import *
 from charmanager import *
 from characters import *
-from health import HealthProtagonist
+from health import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -19,8 +19,9 @@ class GameEngine():
 		self.backgrounds = self.load_backgrounds()
 		self.assets_list = self.load_enemy_parameters()
 		self.char_manager = CharManager()
-		self.health_protagonist = HealthProtagonist()
-		self.healthbars = pygame.sprite.RenderPlain((self.health_protagonist))
+		self.health_protagonist = HealthBar()
+		self.health_container = HealthContainer(self.health_protagonist)
+		self.healthbars = pygame.sprite.RenderPlain((self.health_container))
 		
 		self.whiff_sound = load_sound('bubbles.wav')
 		#self.stab_sound = load_sound('bubbleshit.wav')
