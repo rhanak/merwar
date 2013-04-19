@@ -83,10 +83,10 @@ class GameEngine():
 		if (change):
 			print "Up? ", upOrDown, "; curr_list_num: ", self.curr_list_num
 			if (not upOrDown) and ((self.curr_list_num % 3) > 0):
-				self.curr_list_num+=1
+				self.curr_list_num-=1
 				char_m.push_new_rect()
 			elif upOrDown and ((self.curr_list_num % 3) < 2):
-				self.curr_list_num-=1
+				self.curr_list_num+=1
 				char_m.push_new_rect()
 
 			self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
@@ -99,11 +99,10 @@ class GameEngine():
 		if(leftOrRight == "left" and self.page_num > 0):
 			self.page_num -= 1
 			self.curr_list_num-=3
-		elif(leftOrRight == "right" and self.page_num < len(self.backgrounds)/3):
+		elif(leftOrRight == "right" and self.page_num < len(self.backgrounds)/3 - 1):
 			self.page_num += 1
-			self.page_num = self.page_num % (len(self.backgrounds)/3)
-			self.curr_list_num= 3 * self.page_num
-		self.char_manager.push_new_rect()
+			self.curr_list_num += 3
+		#self.char_manager.push_new_rect()
 		self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
 		pygame.display.flip()
 		
