@@ -24,7 +24,10 @@ class CharManager():
 		self.items = 0
 		self.protg = pygame.sprite.GroupSingle( self.prot )
 		self.currentdifficulty = "normal"
+<<<<<<< Updated upstream
 		self.evil.add(dfm)
+=======
+>>>>>>> Stashed changes
 		self.newrect = pygame.Rect.copy( self.prot.rect )
 		
 	def evil_collide( self ):

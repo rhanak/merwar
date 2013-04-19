@@ -83,11 +83,19 @@ class GameEngine():
 		if (change):
 			print "Up? ", upOrDown, "; curr_list_num: ", self.curr_list_num
 			if (not upOrDown) and ((self.curr_list_num % 3) > 0):
+<<<<<<< Updated upstream
 				self.curr_list_num-=1
 				#char_m.push_new_rect()
 			elif upOrDown and ((self.curr_list_num % 3) < 2):
 				self.curr_list_num+=1
 				#char_m.push_new_rect()
+=======
+				self.curr_list_num+=1
+				char_m.push_new_rect()
+			elif upOrDown and ((self.curr_list_num % 3) < 2):
+				self.curr_list_num-=1
+				char_m.push_new_rect()
+>>>>>>> Stashed changes
 			self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
 			pygame.display.flip()
 		
