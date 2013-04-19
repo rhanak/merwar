@@ -1,4 +1,4 @@
-import os, pygame, json, random, csv, math
+import sys, os, pygame, json, random, csv, math
 from pygame.locals import *
 from utils import *
 from mermaid import *
