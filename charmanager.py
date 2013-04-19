@@ -66,7 +66,7 @@ class CharManager():
 			return (changeDifficulty, False)
 		# Nah they are up for something harder
 		elif(prot.rect.bottom>600):
-			if(self.currentdifficulty!="easy"):
+			if(self.currentdifficulty!="hard"):
 				self.newrect.top = 40
 				self.newrect.left = 100
 			if(self.currentdifficulty=="normal"):
@@ -80,7 +80,7 @@ class CharManager():
 		self.push_new_rect()
 		# No change in difficulty 
 		return (False, False)
-	
+		
 	def pagecheck(self):
 		prot = self.prot
 		if(prot.rect.right>=900):

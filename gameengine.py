@@ -10,7 +10,12 @@ kDataDir = 'data'
 kGlobals = 'globals.json'
 
 class GameEngine():
-	def __init__(self,screen):
+	def __init__(self, screen, clock=pygame.time.Clock()):
+		###### USED FOR TIMERS
+		self.clock = clock	#Currently using a constructed one. Maybe use outside one?
+		self.times = [0.0, 0.0, 0.0] #accumulator Easy, Med, Hard times
+		self.timer_index = 1	#start on Medium timer
+		###### END TIMER STUFF
 		self.page_num = 0
 		self.curr_list_num = 1
 		self.curr_num_enemies = 0
@@ -35,6 +40,7 @@ class GameEngine():
 		self.char_manager.draw(self.screen)
 		self.healthbars.update()
 		self.healthbars.draw(self.screen)
+		self.update_timers()
 
 		# Just showing how you can test the health bar for the protagonist
 		for event in pygame.event.get():
@@ -105,5 +111,22 @@ class GameEngine():
 		#self.char_manager.push_new_rect()
 		self.screen.blit(self.backgrounds[self.curr_list_num], (0,0))
 		pygame.display.flip()
+	
+	### I am wondering whether I could separate this into a new Class 	###
+	### ---DALE 		[TIMER CODE FOLLOWS]							###	
+	def update_timers(self):
+		''' Called from the main update function, this will update and display 
+			the	timer for the currently active difficulty level '''
+		self.timer_index = self.curr_list_num % 3
+		self.times[self.timer_index] += self.clock.tick()
+		self.display_text("Level " + str(self.timer_index + 1) + ":" + 
+		"{:10.2f}".format(self.times[self.timer_index]/1000.0) +"s", 20, 20)
 		
+	def display_text(self, text, x, y):
+		''' Display the passed text at the coordinates (x,y) in 
+			a sufficiently visible font '''
+		font_obj = pygame.font.SysFont("arial", 20, bold=True)
+		disp_text = font_obj.render(text, 1, (204, 102, 0))
+		self.screen.blit(disp_text, (x,y))
+		pygame.display.flip()
 
