@@ -41,8 +41,6 @@ class HealthBar(pygame.sprite.Sprite):
 
 		self.image.fill((0,0,0))
 		self.image.fill((255,255,0), pygame.Rect(0,0, health_width, self.height))
-		print "..."
-
 
 	def set_health(self, health):
 		if(health < 0 or health > 100):
