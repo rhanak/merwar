@@ -1,8 +1,9 @@
 import os, pygame, json, random, csv, math
 from pygame.locals import *
 from utils import *
+from abstractchar import AbstractCharacter
 
-class Mermaid( pygame.sprite.Sprite ):
+class Mermaid( AbstractCharacter ):
 	def __init__( self, props):
 		pygame.sprite.Sprite.__init__( self )
 		self.properties = props
@@ -112,8 +113,10 @@ class Mermaid( pygame.sprite.Sprite ):
 		self.health-=attackPower
 		if(self.health<=0):
 			self.dead = 1
+		self.notify(("health", "decreased", attackPower))
 		
 	def increaseHealth(self):
 		self.health+=10
 		if(self.health>100):
 			self.health = 100
+		self.notify(("health", "increased", 10))

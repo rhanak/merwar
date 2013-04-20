@@ -1,10 +1,11 @@
 import os, pygame, json, random, csv, math
 from pygame.locals import *
 from utils import *
+from abstractchar import AbstractCharacter
 
-class Shark(pygame.sprite.Sprite):
+class Shark(AbstractCharacter):
 	def __init__(self):
-		pygame.sprite.Sprite.__init__(self)
+		AbstractCharacter.__init__(self)
 		self.image, self.rect= load_image('shark.png')
 		self.image = pygame.transform.flip(self.image,1,0)
 		screen= pygame.display.get_surface()
@@ -63,9 +64,9 @@ class Shark(pygame.sprite.Sprite):
 			self.dizzy=1
 			self.original= self.image;
 
-class Enemy( pygame.sprite.Sprite ):
+class Enemy( AbstractCharacter ):
 	def __init__( self, props, charmanager ):
-		pygame.sprite.Sprite.__init__( self )
+		AbstractCharacter.__init__( self )
 		self.manager = charmanager
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )

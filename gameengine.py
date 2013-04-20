@@ -25,6 +25,7 @@ class GameEngine():
 		self.assets_list = self.load_enemy_parameters()
 		self.char_manager = CharManager()
 		self.read_current_assets()
+
 		self.health_protagonist = HealthBar()
 		self.health_container = HealthContainer(self.health_protagonist)
 		self.healthbars = pygame.sprite.RenderPlain((self.health_container))

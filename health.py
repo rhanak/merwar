@@ -24,6 +24,29 @@ class HealthContainer(pygame.sprite.Sprite):
 		
 		self.image.blit(self.healthbar.image, self.rect_health)
 
+class MultipleHealthContainer(pygame.sprite.Sprite):
+	def __init__(self, healthbars):
+		pygame.sprite.Sprite.__init__(self)
+		
+		screen = pygame.display.get_surface()
+		width = 150 
+		height = 30
+		
+		self.healthbar = healthbar
+		self.area = screen.get_rect()
+		self.rect = pygame.Rect(0, self.area.bottom - height, width, height)
+		self.image = pygame.Surface([width, height])
+		self.image.set_alpha(50)
+		self.image.fill((255,255,255))
+		
+		self.rect_health = pygame.Rect(5, 10, healthbar.width, healthbar.height)
+		
+	def update(self):
+		self.healthbar.update()
+		
+		self.image.blit(self.healthbar.image, self.rect_health)
+
+
 class HealthBar(pygame.sprite.Sprite):
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
