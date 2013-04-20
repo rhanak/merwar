@@ -24,6 +24,7 @@ class GameEngine():
 		self.backgrounds = self.load_backgrounds()
 		self.assets_list = self.load_enemy_parameters()
 		self.char_manager = CharManager()
+		self.read_current_assets()
 		self.health_protagonist = HealthBar()
 		self.health_container = HealthContainer(self.health_protagonist)
 		self.healthbars = pygame.sprite.RenderPlain((self.health_container))
@@ -79,9 +80,9 @@ class GameEngine():
 		return assets_list
 		
 	def read_current_assets(self):	
-		assets = self.assets_list.split('/',2)
-		self.char_manager.set_evils(assets[0],assets[1])
-		self.char_manager.set_items(assets[2])
+		assets = self.assets_list[self.curr_list_num].split('/',2)
+		self.char_manager.set_evils(int(assets[0]),assets[1])
+		#self.char_manager.set_items(assets[2])
 		
 	def update_prot_with_border_checks(self):
 		''' Use more modular functions from charmanager to check borders
@@ -103,6 +104,7 @@ class GameEngine():
 			return False
 		self.curr_list_num += num
 		#print "Difficulty list val: ", self.curr_list_num
+		self.read_current_assets()
 		return True
 		
 	def change_page_by_offset(self, num):
@@ -114,6 +116,7 @@ class GameEngine():
 		if((3 * new_page_num > (len(self.backgrounds)-1)) or new_page_num < 0): return False
 		self.page_num = new_page_num
 		self.curr_list_num += 3*num
+		self.read_current_assets()
 		return True
 	
 	### I am wondering whether I could separate the below into a new Class 	###
@@ -130,6 +133,6 @@ class GameEngine():
 		''' Display the passed text at the coordinates (x,y) in 
 			a sufficiently visible font '''
 		font_obj = pygame.font.SysFont("arial", 20, bold=True)
-		disp_text = font_obj.render(text, 1, (204, 102, 0))
+		disp_text = font_obj.render(text, 1, (249, 35, 7))
 		self.screen.blit(disp_text, (x,y))
 

@@ -77,8 +77,7 @@ class Enemy( pygame.sprite.Sprite ):
 		self.velocity = [0.0,0.0]
 		self._update_image( 0 )
 		self.rect = self.image.get_rect()
-		self.rect.top = int( props['start y'] )
-		self.rect.left = int( props['start x'] )
+		self.rect.topleft = random.randrange(700,840), random.randrange(400,570)
 		
 		
 		#Mode 0 is 'tracking mode' in which the enemy attempts to close the distance between itself and Lerelei

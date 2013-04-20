@@ -15,15 +15,10 @@ class CharManager():
 		mermaid = Mermaid(self.propsfiles[0])
 		dfm = Enemy(self.propsfiles[1], self)
 		
-		sharks = []
-		for i in range(6):
-			sharks.append(Shark())
-		
 		self.prot = mermaid
-		self.evil = pygame.sprite.RenderPlain(sharks)
+		self.evil = pygame.sprite.RenderPlain(dfm)
 		self.items = 0
 		self.protg = pygame.sprite.GroupSingle( self.prot )
-		self.evil.add(dfm)
 		
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
@@ -107,15 +102,17 @@ class CharManager():
 			self.prot.rect.top = self.diffUpOrDown()
 		if(page):
 			self.prot.rect.left = self.pageLeftOrRight()
-		if(page or diff): print "Changed!"
+		if(page or diff): 
+			print "Changed!"
+			
 		
 	####END NEW BORDER CHECKING CODE
 		
 	def set_evils( self, num_enemies, type_enemies):
-		evil.clear()
+		self.evil.empty()
 		'''add in type differences'''
-		for x in num_enemies:
-			evil.add(Shark())
+		for x in range(0,num_enemies):
+			self.evil.add(Enemy(self.propsfiles[1], self))
 		
 	def set_items(self, item_num):
 		self.items = createNewItems(item_num)
