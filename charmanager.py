@@ -133,6 +133,20 @@ class CharManager():
 	def evil_helper(self, spriteA, spriteB):
 		spriteA.joinWith(spriteB, None)
 		
+	def damageMermaid(self, damage):
+		self.prot.decreaseHealth(damage)
+		print 'lalala'
+	
 	def checkDodgeStatus(self):
+		#return true if dodging
 		return self.prot.isDodging()
 
+	def checkPositionStatus(self, enemypos):
+		#return true if out of range
+		loreleipos = self.prot.get_position()
+		xrange = [(enemypos[0]-200),enemypos[0]]
+		yrange = [(enemypos[1]-100),enemypos[1]+100]
+		if(loreleipos[0]>=xrange[0] and poreleipos[0]<=xrange[1]):
+			if(loreleipos[1]>=yrange[0] and poreleipos[1]<=yrange[1]):
+				return 0
+		return 1
