@@ -97,6 +97,7 @@ class GameEngine():
 		''' Attempt to change Difficulty by num.
 			Return TRUE if new difficulty valid, FALSE otherwise.
 		'''
+		if not num: return False
 		diff = self.curr_list_num % 3
 		if((diff == 0 and num < 0) or (diff==2 and num > 0)): 
 			return False
@@ -108,6 +109,7 @@ class GameEngine():
 		''' Attempt to change Page by num.
 			Return TRUE if new page valid, FALSE otherwise.
 		'''
+		if not num: return False
 		new_page_num = self.page_num + num
 		if((3 * new_page_num > (len(self.backgrounds)-1)) or new_page_num < 0): return False
 		self.page_num = new_page_num

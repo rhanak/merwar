@@ -65,9 +65,7 @@ class Mermaid( pygame.sprite.Sprite ):
 		self.clampy(newpos, 0, 630)
 		
 		self.rect = newpos
-		'''
-		difficulty changes
-		'''
+
 		
 	def stab(self, target):
 		if not self.stabbing:

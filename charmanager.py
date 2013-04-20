@@ -107,6 +107,7 @@ class CharManager():
 			self.prot.rect.top = self.diffUpOrDown()
 		if(page):
 			self.prot.rect.left = self.pageLeftOrRight()
+		if(page or diff): print "Changed!"
 		
 	####END NEW BORDER CHECKING CODE
 		
