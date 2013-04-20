@@ -2,6 +2,7 @@ import os, pygame, json, random, csv, math
 from pygame.locals import *
 from characters import *
 from mermaid import *
+from item import *
 from utils import *
 
 kDataDir = 'data'
@@ -17,7 +18,7 @@ class CharManager():
 		
 		self.prot = mermaid
 		self.evil = pygame.sprite.RenderPlain(dfm)
-		self.items = 0
+		self.items = pygame.sprite.Group()
 		self.protg = pygame.sprite.GroupSingle( self.prot )
 		
 	def evil_collide( self ):
@@ -33,11 +34,13 @@ class CharManager():
 		self.evil_collide()
 		self.evil.update(self.prot.get_position())
 		self.prot.update()
+		self.items.update()
 		#return self.difficulty()
 		
 	def draw( self, screen ):
 		self.protg.draw( screen )
 		self.evil.draw( screen )
+		self.items.draw( screen )
 	
 	### NEW BORDER CHECKING POSITION UPDATE FUNCTIONS
 	### WHAT TO DO: 
@@ -118,11 +121,17 @@ class CharManager():
 				self.evil.add(Enemy(self.propsfiles[2], self))
 		
 	def set_items(self, item_num):
-		self.items = createNewItems(item_num)
+		if not self.items:
+			self.items = pygame.sprite.Group()
+		self.items.empty()
+		for x in range(item_num):
+			self.items.add(Item())
 				
 	def evil_helper(self, spriteA, spriteB):
 		spriteA.joinWith(spriteB, None)
 		
 	def checkDodgeStatus(self):
 		return self.prot.isDodging()
+
+		
 
