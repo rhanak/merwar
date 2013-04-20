@@ -4,6 +4,7 @@ from characters import *
 from mermaid import *
 from item import *
 from utils import *
+from health import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -21,6 +22,13 @@ class CharManager():
 		self.items = pygame.sprite.Group()
 		self.protg = pygame.sprite.GroupSingle( self.prot )
 		
+		self.health_setup()
+	
+	def health_setup(self):
+		health_protagonist = HealthBar()
+		self.prot.addListener(health_protagonist)
+		self.healthbars = pygame.sprite.RenderPlain((HealthContainer(health_protagonist)))
+		
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
 		ev_sprites = ev_copy.sprites()
@@ -35,18 +43,20 @@ class CharManager():
 		self.evil.update(self.prot.get_position())
 		self.prot.update()
 		self.items.update()
+		self.healthbars.update()
 		#return self.difficulty()
 		
 	def draw( self, screen ):
 		self.protg.draw( screen )
 		self.evil.draw( screen )
 		self.items.draw( screen )
+		self.healthbars.draw( screen )
 	
 	### NEW BORDER CHECKING POSITION UPDATE FUNCTIONS
 	### WHAT TO DO: 
-	### 1. 	Use atDiffBorder() and atPageBorder() to determine engine level changes
+	### 1.	Use atDiffBorder() and atPageBorder() to determine engine level changes
 	### 2.	Call move_prot_by_border_checks(diff, page) from engine,
-	### 	where diff and page, Bools, indicate whether they should change.
+	###		where diff and page, Bools, indicate whether they should change.
 	### ---Dale
 	def diffUpOrDown(self):
 		''' Vertical: return the rect.top value of where the mermaid should
@@ -61,8 +71,8 @@ class CharManager():
 	
 	def atDiffBorder(self):
 		''' Vertical: return -1 if protagonist collides with top border 
-					  return 1 if protagonist collides with bottom border
-					  0 if no collision. 1 and -1 evaluate to Boolean TRUE
+						return 1 if protagonist collides with bottom border
+						0 if no collision. 1 and -1 evaluate to Boolean TRUE
 		'''
 		if(self.prot.rect.top<10):
 			return -1
@@ -130,8 +140,20 @@ class CharManager():
 	def evil_helper(self, spriteA, spriteB):
 		spriteA.joinWith(spriteB, None)
 		
+	def damageMermaid(self, damage):
+		self.prot.decreaseHealth(damage)
+	
 	def checkDodgeStatus(self):
+		#return true if dodging
 		return self.prot.isDodging()
 
-		
+	def checkPositionStatus(self, enemypos):
+		#return true if out of range
+		loreleipos = self.prot.get_position()
+		xrange = [(enemypos[0]-200),enemypos[0]]
+		yrange = [(enemypos[1]-100),enemypos[1]+100]
+		if(loreleipos[0]>=xrange[0] and poreleipos[0]<=xrange[1]):
+			if(loreleipos[1]>=yrange[0] and poreleipos[1]<=yrange[1]):
+				return 0
+		return 1
 

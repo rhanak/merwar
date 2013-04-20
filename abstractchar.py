@@ -3,15 +3,15 @@ import pygame
 class AbstractCharacter(pygame.sprite.Sprite):
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
-		subscribers = []
+		self.subscribers = []
 
-	def addListener(subscriber):
-		subscribers.append(subscriber)
+	def addListener(self, subscriber):
+		self.subscribers.append(subscriber)
 
-	def delListener():
+	def delListener(self, subscriber):
 		# TODO
 		print "del"
 		
-	def notify(event):
-		for subscriber in subscribers:
-			 subscriber(event)
+	def notify(self, event):
+		for subscriber in self.subscribers:
+			 subscriber.event(event)

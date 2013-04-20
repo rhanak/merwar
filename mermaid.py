@@ -5,7 +5,7 @@ from abstractchar import AbstractCharacter
 
 class Mermaid( AbstractCharacter ):
 	def __init__( self, props):
-		pygame.sprite.Sprite.__init__( self )
+		AbstractCharacter.__init__( self )
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
 		self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )

@@ -4,7 +4,6 @@ from utils import *
 from mermaid import *
 from charmanager import *
 from characters import *
-from health import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -25,10 +24,6 @@ class GameEngine():
 		self.assets_list = self.load_enemy_parameters()
 		self.char_manager = CharManager()
 		self.read_current_assets()
-
-		self.health_protagonist = HealthBar()
-		self.health_container = HealthContainer(self.health_protagonist)
-		self.healthbars = pygame.sprite.RenderPlain((self.health_container))
 		
 		self.whiff_sound = load_sound('bubbles.wav')
 		#self.stab_sound = load_sound('bubbleshit.wav')
@@ -41,8 +36,6 @@ class GameEngine():
 		#self.change_page(self.char_manager.pagecheck())
 		self.update_prot_with_border_checks()
 		self.char_manager.draw(self.screen)
-		self.healthbars.update()
-		self.healthbars.draw(self.screen)
 		self.update_timers()
 		pygame.display.flip()
 
@@ -54,9 +47,7 @@ class GameEngine():
 				sys.exit("Quit.") 
 			elif event.type == MOUSEBUTTONDOWN:
 				self.whiff_sound.play()
-			elif event.type is MOUSEBUTTONUP:
-				self.health_protagonist.dec_health()
-	
+				
 	def load_backgrounds(self):
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()
 		n0 = pygame.image.load(path_rejoin('data/backgrounds/n0.png')).convert()

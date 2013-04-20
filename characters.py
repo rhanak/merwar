@@ -152,10 +152,11 @@ class Enemy( AbstractCharacter ):
 	def attack(self):
 		miss = load_sound('bubbles.wav')
 		hit = load_sound('bubbleshit.wav')
-		continueAttack = not self.manager.checkDodgeStatus()
+		continueAttack = not (self.manager.checkDodgeStatus() and self.manager.checkPositionStatus(self.rect.center))
 		if(continueAttack):
 			#animate attack
-			#damage lerelei's health
+			#print "attackPower %d" % self.attackPower
+			self.manager.damageMermaid(self.attackPower)
 			hit.play()
 		else:
 			#animate attack
