@@ -3,6 +3,7 @@ from pygame.locals import *
 from characters import *
 from mermaid import *
 from utils import *
+from health import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -20,6 +21,13 @@ class CharManager():
 		self.items = 0
 		self.protg = pygame.sprite.GroupSingle( self.prot )
 		
+		self.health_setup()
+	
+	def health_setup(self):
+		health_protagonist = HealthBar()
+		self.prot.addListener(health_protagonist)
+		self.healthbars = pygame.sprite.RenderPlain((HealthContainer(health_protagonist)))
+		
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
 		ev_sprites = ev_copy.sprites()
@@ -33,17 +41,19 @@ class CharManager():
 		self.evil_collide()
 		self.evil.update(self.prot.get_position())
 		self.prot.update()
+		self.healthbars.update()
 		#return self.difficulty()
 		
 	def draw( self, screen ):
 		self.protg.draw( screen )
 		self.evil.draw( screen )
+		self.healthbars.draw( screen )
 	
 	### NEW BORDER CHECKING POSITION UPDATE FUNCTIONS
 	### WHAT TO DO: 
-	### 1. 	Use atDiffBorder() and atPageBorder() to determine engine level changes
+	### 1.	Use atDiffBorder() and atPageBorder() to determine engine level changes
 	### 2.	Call move_prot_by_border_checks(diff, page) from engine,
-	### 	where diff and page, Bools, indicate whether they should change.
+	###		where diff and page, Bools, indicate whether they should change.
 	### ---Dale
 	def diffUpOrDown(self):
 		''' Vertical: return the rect.top value of where the mermaid should
@@ -58,8 +68,8 @@ class CharManager():
 	
 	def atDiffBorder(self):
 		''' Vertical: return -1 if protagonist collides with top border 
-					  return 1 if protagonist collides with bottom border
-					  0 if no collision. 1 and -1 evaluate to Boolean TRUE
+						return 1 if protagonist collides with bottom border
+						0 if no collision. 1 and -1 evaluate to Boolean TRUE
 		'''
 		if(self.prot.rect.top<10):
 			return -1

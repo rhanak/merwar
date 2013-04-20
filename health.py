@@ -65,11 +65,24 @@ class HealthBar(pygame.sprite.Sprite):
 		self.image.fill((0,0,0))
 		self.image.fill((255,255,0), pygame.Rect(0,0, health_width, self.height))
 
-	def set_health(self, health):
+	def inc_health(self, value):
 		if(health < 0 or health > 100):
 			print "Error invalid value for health: %d" % health
 
-		self.health = health / 100
+		healthChange = health / 100
+		self.health = self.health - healthChange
 
-	def dec_health(self, ):
-		self.set_health((self.health - .05) * 100)
+	def dec_health(self, value):
+		if(health < 0 or health > 100):
+			print "Error invalid value for health: %d" % health
+
+		healthChange = health / 100
+		self.health = self.health + healthChange
+
+	def event(self, event):
+		grouping, action, value = event
+		if(grouping == "health"):
+			if(action == "increased"):
+				self.inc_health(value)
+			elif(action == "decreased"):	
+				self.dec_health(value)
