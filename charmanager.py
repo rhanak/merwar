@@ -112,7 +112,10 @@ class CharManager():
 		self.evil.empty()
 		'''add in type differences'''
 		for x in range(0,num_enemies):
-			self.evil.add(Enemy(self.propsfiles[1], self))
+			if(type_enemies=='df'):
+				self.evil.add(Enemy(self.propsfiles[1], self))
+			elif(type_enemies=='dm'):
+				self.evil.add(Enemy(self.propsfiles[2], self))
 		
 	def set_items(self, item_num):
 		self.items = createNewItems(item_num)

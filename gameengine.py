@@ -64,7 +64,10 @@ class GameEngine():
 		e1 = pygame.image.load(path_rejoin('data/backgrounds/e1.png')).convert()
 		n1 = pygame.image.load(path_rejoin('data/backgrounds/n1.png')).convert()
 		h1 = pygame.image.load(path_rejoin('data/backgrounds/h1.png')).convert()
-		background_list = [e0,n0,h0,e1,n1,h1]
+		e2 = pygame.image.load(path_rejoin('data/backgrounds/e2.png')).convert()
+		n2 = pygame.image.load(path_rejoin('data/backgrounds/n2.png')).convert()
+		h2 = pygame.image.load(path_rejoin('data/backgrounds/h2.png')).convert()
+		background_list = [e0,n0,h0,e1,n1,h1,e2,n2,h2]
 		return background_list
 		
 	def get_opening_screen(self):
@@ -73,11 +76,11 @@ class GameEngine():
 	def load_enemy_parameters(self):
 		assets_list = []
 		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
+			assets_list.append(difficulty['page 0'])
+		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
 			assets_list.append(difficulty['page 1'])
 		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
 			assets_list.append(difficulty['page 2'])
-		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
-			assets_list.append(difficulty['page 3'])
 		return assets_list
 		
 	def read_current_assets(self):	
