@@ -135,7 +135,6 @@ class CharManager():
 		
 	def damageMermaid(self, damage):
 		self.prot.decreaseHealth(damage)
-		print 'lalala'
 	
 	def checkDodgeStatus(self):
 		#return true if dodging

@@ -1,3 +1,4 @@
+from __future__ import division
 import os, pygame
 from pygame.locals import *
 from utils import *
@@ -70,19 +71,19 @@ class HealthBar(pygame.sprite.Sprite):
 			print "Error invalid value for health: %d" % health
 
 		healthChange = health / 100
-		self.health = self.health - healthChange
+		self.health = self.health + healthChange
 
 	def dec_health(self, health):
 		if(health < 0 or health > 100):
 			print "Error invalid value for health: %d" % health
 
 		healthChange = health / 100
-		self.health = self.health + healthChange
+		self.health = self.health - healthChange
 
 	def event(self, event):
 		grouping, action, value = event
 		if(grouping == "health"):
 			if(action == "increased"):
 				self.inc_health(value)
-			elif(action == "decreased"):	
+			elif(action == "decreased"):
 				self.dec_health(value)

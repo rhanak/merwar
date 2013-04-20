@@ -155,6 +155,7 @@ class Enemy( AbstractCharacter ):
 		continueAttack = not (self.manager.checkDodgeStatus() and self.manager.checkPositionStatus(self.rect.center))
 		if(continueAttack):
 			#animate attack
+			#print "attackPower %d" % self.attackPower
 			self.manager.damageMermaid(self.attackPower)
 			hit.play()
 		else:
