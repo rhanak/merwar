@@ -77,10 +77,10 @@ class CharManager():
 			end up IF difficulty changes. Difficulty changes are
 			tracked in the Game Engine now.
 		'''
-		if(self.prot.rect.right>890):
-			return 20
 		if(self.prot.rect.left<10):
 			return (900 - self.prot.rect.width - 10)
+		if(self.prot.rect.right>890):
+			return 20
 		return self.prot.rect.left
 	
 	def atPageBorder(self):
@@ -88,10 +88,10 @@ class CharManager():
 						return 1 if protagonist collides with right border
 						0 if no collision. 1 and -1 evaluate to Boolean TRUE
 		'''
+		if (self.prot.rect.left<10):
+			return -1
 		if (self.prot.rect.right>890): 
 			return 1
-		if (self.prot.rect.left<20):
-			return -1
 		return 0
 		
 	def move_protagonist(self, (left,top)):

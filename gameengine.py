@@ -109,8 +109,7 @@ class GameEngine():
 			Return TRUE if new page valid, FALSE otherwise.
 		'''
 		new_page_num = self.page_num + num
-		if(3 * new_page_num > (len(self.backgrounds)-1) or new_page_num < 0): return False
-		#print "Last page: ", (len(self.backgrounds)-1), "\tCurrent page: ", new_page_num
+		if((3 * new_page_num > (len(self.backgrounds)-1)) or new_page_num < 0): return False
 		self.page_num = new_page_num
 		self.curr_list_num += 3*num
 		return True
