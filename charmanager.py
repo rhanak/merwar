@@ -145,7 +145,7 @@ class CharManager():
 		loreleipos = self.prot.get_position()
 		xrange = [(enemypos[0]-200),enemypos[0]]
 		yrange = [(enemypos[1]-100),enemypos[1]+100]
-		if(loreleipos[0]>=xrange[0] and poreleipos[0]<=xrange[1]):
-			if(loreleipos[1]>=yrange[0] and poreleipos[1]<=yrange[1]):
+		if(loreleipos[0]>=xrange[0] and loreleipos[0]<=xrange[1]):
+			if(loreleipos[1]>=yrange[0] and loreleipos[1]<=yrange[1]):
 				return 0
 		return 1

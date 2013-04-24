@@ -79,14 +79,16 @@ class Enemy( AbstractCharacter ):
 		self._update_image( 0 )
 		self.rect = self.image.get_rect()
 		self.rect.topleft = random.randrange(700,840), random.randrange(400,570)
-		
+		self.maxBefore = int( props['max before'] )
+		self.maxBetween = int( props['max between'] )
 		
 		#Mode 0 is 'tracking mode' in which the enemy attempts to close the distance between itself and Lerelei
 		#Mode 1 is 'combat mode' in which the enemy maintains distance from Lorelei attempts to attack her
 		self.mode = 0
-		self.recovering = 0
-		self.recoverytimer = 0
+		self.recovering = 1
+		self.recoverytimer = random.randrange(0,self.maxBefore)
 		self.preparedToAttack = 0
+		self.continueAttack = True
 		
 	def _update_image( self, frame_index ):
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
@@ -101,7 +103,8 @@ class Enemy( AbstractCharacter ):
 				self.combat(pos)
 		else:
 			self.recoverytimer += 1
-			if(self.recoverytimer>50):
+			
+			if(self.recoverytimer>random.randrange(self.maxBetween-10,self.maxBetween)):
 				self.recovering = 0
 				self.recoverytimer = 0
 				self.preparedToAttack = 0
@@ -143,6 +146,8 @@ class Enemy( AbstractCharacter ):
 			self.preparedToAttack = 0
 		else:
 			self.preparedToAttack += 1
+			if self.manager.checkDodgeStatus():
+				self.continueAttack = False
 		
 	def prepareToAttack(self):
 		pull_back = load_sound('enemypullback.wav')
@@ -152,8 +157,9 @@ class Enemy( AbstractCharacter ):
 	def attack(self):
 		miss = load_sound('bubbles.wav')
 		hit = load_sound('bubbleshit.wav')
-		continueAttack = not (self.manager.checkDodgeStatus() and self.manager.checkPositionStatus(self.rect.center))
-		if(continueAttack):
+		if self.manager.checkPositionStatus(self.rect.center):
+			self.continueAttack = False
+		if(self.continueAttack):
 			#animate attack
 			#print "attackPower %d" % self.attackPower
 			self.manager.damageMermaid(self.attackPower)
@@ -162,6 +168,7 @@ class Enemy( AbstractCharacter ):
 			#animate attack
 			miss.play()
 		self.recovering = 1
+		self.continueAttack = True
 		
 	def joinWith(self, other, dims):
 		blah = 0

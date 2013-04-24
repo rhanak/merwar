@@ -25,6 +25,8 @@ class Mermaid( AbstractCharacter ):
 		self.changeDifficulties = 0
 		self.health = 100
 		self.dead = 0
+		#tempvars
+		self.dodgeStatus = False
 
 	def _update_image( self, frame_index ):
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
@@ -58,6 +60,11 @@ class Mermaid( AbstractCharacter ):
 			if pressed[ K_UP ]:
 				y_amt -= ms
 			self.velocity = [x_amt, y_amt]
+			
+		if (pressed[ K_RSHIFT ] or pressed[ K_LSHIFT ]):
+			self.dodgeStatus = True
+		else:
+			self.dodgeStatus = False
 		
 		self.angle = math.atan2(self.velocity[1], self.velocity[0])
 		newpos = self.rect.move(self.velocity)
@@ -107,13 +114,14 @@ class Mermaid( AbstractCharacter ):
 		return self.rect.center
 
 	def isDodging(self):
-		return 0
+		return self.dodgeStatus
 
 	def decreaseHealth(self, attackPower):
-		self.health-=attackPower
-		if(self.health<=0):
-			self.dead = 1
-		self.notify(("health", "decreased", attackPower))
+		if not self.dodgeStatus:
+			self.health-=attackPower
+			if(self.health<=0):
+				self.dead = 1
+			self.notify(("health", "decreased", attackPower))
 		
 	def increaseHealth(self):
 		self.health+=10
