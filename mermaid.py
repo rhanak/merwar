@@ -4,6 +4,7 @@ from utils import *
 from abstractchar import AbstractCharacter
 from combostate import *
 
+
 class Mermaid( AbstractCharacter ):
 	def __init__( self, props):
 		AbstractCharacter.__init__( self )
@@ -34,7 +35,7 @@ class Mermaid( AbstractCharacter ):
 		self.dodgeStatus = False
 
 	def _update_image( self ):
-		self.image = self.combo_state.get_cur_frame_and_advance()
+		self.image = self.combo_state.get_cur_frame_and_progress()
 		self.image = pygame.transform.rotate(self.image, -math.degrees(self.angle))
 		if self.inited: self.rect = self.image.get_rect(center=self.rect.center)
 		#self.frame_index = frame_index
@@ -57,6 +58,7 @@ class Mermaid( AbstractCharacter ):
 				if abs(self.velocity[0])<self.decay: self.velocity[0]=0
 				if abs(self.velocity[1])<self.decay: self.velocity[1]=0
 		else:
+			self.combo_state.interrupt()
 			x_amt = y_amt = 0 
 			if pressed[ K_RIGHT ]:
 				x_amt += ms
@@ -68,7 +70,7 @@ class Mermaid( AbstractCharacter ):
 				y_amt -= ms
 			self.velocity = [x_amt, y_amt]
 			
-		if (pressed[ K_SPACE ]):
+		if (pressed[ self.combo_state.get_combo_key() ]):
 			self.combo_state.advance()
 			
 		if (pressed[ K_RSHIFT ] or pressed[ K_LSHIFT ]):
