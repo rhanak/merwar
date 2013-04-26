@@ -40,10 +40,10 @@ class CharManager():
 				if(self.prot.health < 1):
 					eventing = self.eventThreading
 					def hello():
-						print "Set zero"
+						#print "Set zero"
 						eventing.set()
 						time.sleep(2)
-						print "Set one"
+						#print "Set one"
 						eventing.set()
 
 					t = threading.Timer(0.0, hello)
