@@ -4,6 +4,7 @@ from utils import *
 from mermaid import *
 from charmanager import *
 from characters import *
+from dalesutils import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -22,7 +23,7 @@ class GameEngine():
 		self.screen = screen
 		self.backgrounds = self.load_backgrounds()
 		self.assets_list = self.load_enemy_parameters()
-		self.char_manager = CharManager()
+		self.char_manager = CharManager(screen)
 		self.read_current_assets()
 		
 		self.whiff_sound = load_sound('bubbles.wav')
@@ -121,13 +122,7 @@ class GameEngine():
 			the	timer for the currently active difficulty level '''
 		self.timer_index = self.curr_list_num % 3
 		self.times[self.timer_index] += self.clock.tick()
-		self.display_text("Level " + str(self.timer_index + 1) + ":" + 
+		display_text(self.screen, "Level " + str(self.timer_index + 1) + ":" + 
 		"{:10.2f}".format(self.times[self.timer_index]/1000.0) +"s", 20, 20)
 		
-	def display_text(self, text, x, y):
-		''' Display the passed text at the coordinates (x,y) in 
-			a sufficiently visible font '''
-		font_obj = pygame.font.SysFont("arial", 20, bold=True)
-		disp_text = font_obj.render(text, 1, (249, 35, 7))
-		self.screen.blit(disp_text, (x,y))
 

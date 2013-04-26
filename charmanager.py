@@ -5,18 +5,20 @@ from mermaid import *
 from item import *
 from utils import *
 from health import *
+from dalesutils import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
 
 class CharManager():
-	def __init__( self ):
+	def __init__( self, screen ):
 		self.propsfiles = []
 		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
 			self.propsfiles.append(character)
 		mermaid = Mermaid(self.propsfiles[0])
 		dfm = Enemy(self.propsfiles[1], self)
 		
+		self.screen = screen
 		self.prot = mermaid
 		self.evil = pygame.sprite.RenderPlain(dfm)
 		self.items = pygame.sprite.Group()
@@ -27,8 +29,16 @@ class CharManager():
 	def health_setup(self):
 		health_protagonist = HealthBar()
 		self.prot.addListener(health_protagonist)
+		self.prot.addListener(self)
 		self.healthbars = pygame.sprite.RenderPlain((HealthContainer(health_protagonist)))
 		
+	def event(self, event):
+		grouping, action, value = event
+		if(grouping == "health"):
+			if(action == "decreased"):
+				if(self.prot.health < 1):
+					display_text(self.screen, "GAME OVER!!!!", 200, 200)
+
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
 		ev_sprites = ev_copy.sprites()
