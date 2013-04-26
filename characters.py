@@ -81,6 +81,7 @@ class Enemy( AbstractCharacter ):
 		self.rect.topleft = random.randrange(700,840), random.randrange(400,570)
 		self.maxBefore = int( props['max before'] )
 		self.maxBetween = int( props['max between'] )
+		self.health = 100
 		
 		#Mode 0 is 'tracking mode' in which the enemy attempts to close the distance between itself and Lerelei
 		#Mode 1 is 'combat mode' in which the enemy maintains distance from Lorelei attempts to attack her
@@ -94,8 +95,14 @@ class Enemy( AbstractCharacter ):
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
 		self.frame_index = frame_index
 		
+	def _update_health(self):
+		self.image.fill((0,0,0), pygame.Rect(50,0, 100, 10))
+		self.image.fill((255,255,255), pygame.Rect(50,0, self.health, 10))
+		
 	def update( self, pos):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
+		self._update_health()
+		
 		if(not self.recovering):
 			if(not self.mode):
 				self.track(pos)
@@ -148,6 +155,9 @@ class Enemy( AbstractCharacter ):
 			self.preparedToAttack += 1
 			if self.manager.checkDodgeStatus():
 				self.continueAttack = False
+				
+	def damageEnemy(self, attackPower):
+		self.health -= attackPower
 		
 	def prepareToAttack(self):
 		pull_back = load_sound('enemypullback.wav')
@@ -163,6 +173,8 @@ class Enemy( AbstractCharacter ):
 			#animate attack
 			#print "attackPower %d" % self.attackPower
 			self.manager.damageMermaid(self.attackPower)
+			# Just testing damaging the enemy, REMOVE THIS
+			#self.damageEnemy(self.attackPower)
 			hit.play()
 		else:
 			#animate attack
