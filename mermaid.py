@@ -2,13 +2,16 @@ import os, pygame, json, random, csv, math
 from pygame.locals import *
 from utils import *
 from abstractchar import AbstractCharacter
+from combostate import *
 
 class Mermaid( AbstractCharacter ):
 	def __init__( self, props):
 		AbstractCharacter.__init__( self )
 		self.properties = props
-		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
-		self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
+		#self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
+		#self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
+		self.combo_state = ComboState( props['sprite sheet'], [], (int(props['sprite width']),\
+			int( props['sprite height']), int( props['num frames']))) 
 		self.velocity = [0,0]
 		self.stabbing = 0
 		#Dale Added These
@@ -17,7 +20,7 @@ class Mermaid( AbstractCharacter ):
 		self.max_speed = 15
 		self.decay = 3;
 		#end adds
-		self._update_image( 0 )
+		self._update_image()
 		self.rect = self.image.get_rect()
 		self.rect.top = int( props['start y'] )
 		self.rect.left = int( props['start x'] )
@@ -28,14 +31,14 @@ class Mermaid( AbstractCharacter ):
 		#tempvars
 		self.dodgeStatus = False
 
-	def _update_image( self, frame_index ):
-		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
+	def _update_image( self ):
+		self.image = self.combo_state.get_cur_frame_and_advance()
 		self.image = pygame.transform.rotate(self.image, -math.degrees(self.angle))
 		if self.inited: self.rect = self.image.get_rect(center=self.rect.center)
-		self.frame_index = frame_index
+		#self.frame_index = frame_index
 
 	def update( self):
-		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
+		self._update_image( ) #( self.frame_index + 1 ) % len( self.frames )#
 		
 		def sign( x ):
 			if x < 0: return -1
@@ -45,10 +48,13 @@ class Mermaid( AbstractCharacter ):
 		ms = self.max_speed
 		pressed = pygame.key.get_pressed()
 		vel = self.velocity
+		## TODO mermaid stays facing left once she looks left until right is pressed
 		if not (pressed[ K_RIGHT ] or pressed[ K_LEFT ]
 				or pressed[ K_DOWN ] or pressed[ K_UP ]):
 				self.velocity[0] -= sign(vel[0])*self.decay
 				self.velocity[1] -= sign(vel[1])*self.decay
+				if abs(self.velocity[0])<self.decay: self.velocity[0]=0
+				if abs(self.velocity[1])<self.decay: self.velocity[1]=0
 		else:
 			x_amt = y_amt = 0 
 			if pressed[ K_RIGHT ]:

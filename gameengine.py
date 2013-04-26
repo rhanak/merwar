@@ -76,9 +76,9 @@ class GameEngine():
 		return assets_list
 		
 	def read_current_assets(self):	
-		assets = self.assets_list[self.curr_list_num].split('/',2)
+		assets = self.assets_list[self.curr_list_num].split('/',3)
 		self.char_manager.set_evils(int(assets[0]),assets[1])
-		self.char_manager.set_items(2)
+		self.char_manager.set_items(int(assets[2]))
 		
 	def update_prot_with_border_checks(self):
 		''' Use more modular functions from charmanager to check borders
