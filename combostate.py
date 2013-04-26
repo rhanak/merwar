@@ -3,18 +3,17 @@ from pygame.locals import *
 from utils import *
 
 class ComboState():
-	def __init__(self, main_fname, spritesheets, dims):
+	def __init__(self, (main_sheet, dims), spritesheets):
 		''' main_sheet should be a filename for the default sprite sheet
 			spritesheets should give a list of spritesheet image tuples
-			("name", "filename.jpg") ex. None should be duplicate names.
+			("name", "filename.jpg", (dims)) ex. None should be duplicate names.
 			dims should be an (x, y, k) tuple which gives the width, height
 			and number of sprite images in the sprite sheet. '''
-		print "Dims: ", dims
 		self.sheet_map = []
-		for (name, filename) in spritesheets:
+		for (name, filename, dims_l) in spritesheets:
 			image, img_rect = load_image_alpha(filename)
-			self.sheet_map.append((name,(image, img_rect), extract_frames_from_spritesheet(img_rect, dims[0], dims[1], dims[2])))
-		self.cur_sheet, self.cur_rect = load_image_alpha(main_fname)	
+			self.sheet_map.append((name,(image, img_rect), extract_frames_from_spritesheet(img_rect, dims_l[0], dims_l[1], dims_l[2])))
+		self.cur_sheet, self.cur_rect = load_image_alpha(main_sheet)	
 		self.cur_frames = extract_frames_from_spritesheet(self.cur_rect, dims[0], dims[1], dims[2])
 		self.def_frames = self.cur_frames
 		self.def_sheet = self.cur_sheet
@@ -43,7 +42,7 @@ class ComboState():
 	
 	def advance(self):
 		''' Advance the combo by one state '''
-		print 'Pressed Combo Button'
+		#print 'Pressed Combo Button'
 		
 		if self.sheet_map:
 			self.combo_no += 1

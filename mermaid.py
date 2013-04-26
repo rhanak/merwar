@@ -10,8 +10,10 @@ class Mermaid( AbstractCharacter ):
 		self.properties = props
 		#self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
 		#self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
-		self.combo_state = ComboState( props['sprite sheet'], [("main", props['sprite sheet'])], (int(props['sprite width']),\
-			int( props['sprite height']), int( props['num frames']))) 
+		#pass in main spritesheet, first argument as (filename, dims (x,y,k))
+		self.combo_state = ComboState(( props['sprite sheet'], (int(props['sprite width']),\
+			int( props['sprite height']), int( props['num frames'])) ),\
+			[("male", "darkmalemermaid.png",(179,90,6))] )  #list[(name,filename, dims (x,y,k))
 		self.velocity = [0,0]
 		self.stabbing = 0
 		#Dale Added These
@@ -126,6 +128,7 @@ class Mermaid( AbstractCharacter ):
 
 	def decreaseHealth(self, attackPower):
 		if not self.dodgeStatus:
+			self.combo_state.interrupt()
 			self.health-=attackPower
 			if(self.health<=0):
 				self.dead = 1
