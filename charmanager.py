@@ -2,6 +2,7 @@ import os, pygame, json, random, csv, math
 from pygame.locals import *
 from characters import *
 from mermaid import *
+from item import *
 from utils import *
 from health import *
 
@@ -18,7 +19,7 @@ class CharManager():
 		
 		self.prot = mermaid
 		self.evil = pygame.sprite.RenderPlain(dfm)
-		self.items = 0
+		self.items = pygame.sprite.Group()
 		self.protg = pygame.sprite.GroupSingle( self.prot )
 		
 		self.health_setup()
@@ -41,12 +42,14 @@ class CharManager():
 		self.evil_collide()
 		self.evil.update(self.prot.get_position())
 		self.prot.update()
+		self.items.update()
 		self.healthbars.update()
 		#return self.difficulty()
 		
 	def draw( self, screen ):
 		self.protg.draw( screen )
 		self.evil.draw( screen )
+		self.items.draw( screen )
 		self.healthbars.draw( screen )
 	
 	### NEW BORDER CHECKING POSITION UPDATE FUNCTIONS
@@ -128,7 +131,11 @@ class CharManager():
 				self.evil.add(Enemy(self.propsfiles[2], self))
 		
 	def set_items(self, item_num):
-		self.items = createNewItems(item_num)
+		if not self.items:
+			self.items = pygame.sprite.Group()
+		self.items.empty()
+		for x in range(item_num):
+			self.items.add(Item())
 				
 	def evil_helper(self, spriteA, spriteB):
 		spriteA.joinWith(spriteB, None)
@@ -149,3 +156,4 @@ class CharManager():
 			if(loreleipos[1]>=yrange[0] and loreleipos[1]<=yrange[1]):
 				return 0
 		return 1
+
