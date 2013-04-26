@@ -1,4 +1,4 @@
-import os, pygame, json, random, csv, math
+import os, pygame, json, random, csv, math, threading, time
 from pygame.locals import *
 from characters import *
 from mermaid import *
@@ -11,7 +11,7 @@ kDataDir = 'data'
 kGlobals = 'globals.json'
 
 class CharManager():
-	def __init__( self, screen ):
+	def __init__( self, screen, event ):
 		self.propsfiles = []
 		for character in csv.DictReader( open( os.path.join( kDataDir, 'characters.csv' ) ) ):
 			self.propsfiles.append(character)
@@ -19,6 +19,7 @@ class CharManager():
 		dfm = Enemy(self.propsfiles[1], self)
 		
 		self.screen = screen
+		self.eventThreading = event
 		self.prot = mermaid
 		self.evil = pygame.sprite.RenderPlain(dfm)
 		self.items = pygame.sprite.Group()
@@ -37,8 +38,17 @@ class CharManager():
 		if(grouping == "health"):
 			if(action == "decreased"):
 				if(self.prot.health < 1):
-					display_text(self.screen, "GAME OVER!!!!", 200, 200)
+					eventing = self.eventThreading
+					def hello():
+						print "Set zero"
+						eventing.set()
+						time.sleep(2)
+						print "Set one"
+						eventing.set()
 
+					t = threading.Timer(0.0, hello)
+					t.start()
+					
 	def evil_collide( self ):
 		ev_copy = self.evil.copy()
 		ev_sprites = ev_copy.sprites()
@@ -166,4 +176,7 @@ class CharManager():
 			if(loreleipos[1]>=yrange[0] and loreleipos[1]<=yrange[1]):
 				return 0
 		return 1
+		
+	def resetGame(self):
+		self.prot.increaseHealth(90)
 
