@@ -10,7 +10,7 @@ class Mermaid( AbstractCharacter ):
 		self.properties = props
 		#self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
 		#self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
-		self.combo_state = ComboState( props['sprite sheet'], [], (int(props['sprite width']),\
+		self.combo_state = ComboState( props['sprite sheet'], [("main", props['sprite sheet'])], (int(props['sprite width']),\
 			int( props['sprite height']), int( props['num frames']))) 
 		self.velocity = [0,0]
 		self.stabbing = 0
@@ -38,8 +38,7 @@ class Mermaid( AbstractCharacter ):
 		#self.frame_index = frame_index
 
 	def update( self):
-		self._update_image( ) #( self.frame_index + 1 ) % len( self.frames )#
-		
+			
 		def sign( x ):
 			if x < 0: return -1
 			elif x > 0: return 1
@@ -67,6 +66,9 @@ class Mermaid( AbstractCharacter ):
 				y_amt -= ms
 			self.velocity = [x_amt, y_amt]
 			
+		if (pressed[ K_SPACE ]):
+			self.combo_state.advance()
+			
 		if (pressed[ K_RSHIFT ] or pressed[ K_LSHIFT ]):
 			self.dodgeStatus = True
 		else:
@@ -79,7 +81,7 @@ class Mermaid( AbstractCharacter ):
 		self.clampy(newpos, 0, 630)
 		
 		self.rect = newpos
-
+		self._update_image( ) #( self.frame_index + 1 ) % len( self.frames )#
 		
 	def stab(self, target):
 		if not self.stabbing:

@@ -18,6 +18,7 @@ class ComboState():
 		self.cur_frames = extract_frames_from_spritesheet(self.cur_rect, dims[0], dims[1], dims[2])
 		self.def_frames = self.cur_frames
 		self.def_sheet = self.cur_sheet
+		self.def_rect = self.cur_rect
 		self.frame_index = 0
 		self.combo_no = 0
 		
@@ -27,11 +28,13 @@ class ComboState():
 	
 	def interrupt(self):
 		''' Break out of the combo state to the default sheet '''
-		self.cur_sheet = self.def_sheet
-		self.cur_frames = self.def_frames
-		self.combo_no = 0
-		self.frame_index = 0
-		return self.cur_sheet
+		if self.cur_sheet is not self.def_sheet:
+			self.cur_sheet = self.def_sheet
+			self.cur_frames = self.def_frames
+			self.cur_rect = self.def_rect
+			self.combo_no = 0
+			self.frame_index = 0
+		return (self.cur_sheet, self.cur_rect), self.cur_frames
 	
 	def enter_combo(self):
 		''' Enter the combo state '''
@@ -40,10 +43,14 @@ class ComboState():
 	
 	def advance(self):
 		''' Advance the combo by one state '''
-		self.combo_no += 1
-		self.combo_no %= len(self.sheet_map)
-		self.frame_index = 0
-		self.cur_sheet, self.cur_rect = self.sheet_map[self.combo_no-1][1]
+		print 'Pressed Combo Button'
+		
+		if self.sheet_map:
+			self.combo_no += 1
+			self.combo_no %= len(self.sheet_map)
+			self.frame_index = 0
+			self.cur_sheet, self.cur_rect = self.sheet_map[self.combo_no-1][1]
+			self.cur_frames = self.sheet_map[self.combo_no-1][2]
 		return self.get_cur_frame()
 	
 	def find_state(self, sheetname):
