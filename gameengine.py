@@ -51,7 +51,7 @@ class GameEngine():
 				
 				# Need to actually rest the game
 				self.char_manager.resetGame()
-				
+				self.times = [0.0, 0.0, 0.0]
 		
 		if(self.eventNumber == 0):
 			background = self.backgrounds[self.curr_list_num]
