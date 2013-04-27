@@ -6,6 +6,7 @@ from charmanager import *
 from characters import *
 from dalesutils import *
 from selectscreen import *
+from gameconditions import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -24,36 +25,21 @@ class GameEngine():
 		self.screen = screen
 		self.backgrounds = self.load_backgrounds()
 		self.assets_list = self.load_enemy_parameters()
+		
+		# A thread inside Character manager uses this to communicate with the main thread
 		self.eventThreading = threading.Event()
 		self.char_manager = CharManager(screen, self.eventThreading)
-		self.read_current_assets()
+		self.gameConditions = GameConditions(screen, self.eventThreading, self.resetGame)
 		
-		self.eventNumber = 0
+		self.read_current_assets()
 		
 		self.whiff_sound = load_sound('bubbles.wav')
 		#self.stab_sound = load_sound('bubbleshit.wav')
 
 	def update(self):
-		if(self.eventThreading.is_set()):
-			print self.eventNumber
-			if(self.eventNumber == 0):
-				# Event is fired the first time and it shows the game over screen, another event will be fired to show the game menu
-				s = pygame.Surface((self.screen.get_width(), self.screen.get_height()) )
-				self.screen.blit(s, (0,0))
-				display_text(self.screen, "GAME OVER!!!!", self.screen.get_width()/2, self.screen.get_height()/2)
-				self.eventNumber = 1
-				self.eventThreading.clear()
-			else:
-				# Event is fired a second time after so many seconds to show the game menu
-				select_screen(self.screen)
-				self.eventNumber = 0
-				self.eventThreading.clear()
-				
-				# Need to actually rest the game
-				self.char_manager.resetGame()
-				self.times = [0.0, 0.0, 0.0]
+		self.gameConditions.update()
 		
-		if(self.eventNumber == 0):
+		if(self.gameConditions.isNormalPlay()):
 			background = self.backgrounds[self.curr_list_num]
 			self.screen.blit(background, (0,0))
 			#self.change_difficulty(
@@ -73,6 +59,10 @@ class GameEngine():
 				sys.exit("Quit.") 
 			elif event.type == MOUSEBUTTONDOWN:
 				self.whiff_sound.play()
+	
+	def resetGame(self):
+		self.char_manager.resetGame()
+		self.times = [0.0, 0.0, 0.0]
 				
 	def load_backgrounds(self):
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()

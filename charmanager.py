@@ -33,6 +33,7 @@ class CharManager():
 		self.prot.addListener(self)
 		self.healthbars = pygame.sprite.RenderPlain((HealthContainer(health_protagonist)))
 		
+	# Character manager listens for events and when the players health is "gone" -- signalling GAME OVER	
 	def event(self, event):
 		grouping, action, value = event
 		if(grouping == "health"):

@@ -31,6 +31,8 @@ class Enemy( AbstractCharacter ):
 		self.continueAttack = True
 		
 	def _update_image( self, frame_index ):
+		#print "Frame is %d" % frame_index
+		#print "and length in %d" % len(self.frames)
 		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
 		self.frame_index = frame_index
 		
