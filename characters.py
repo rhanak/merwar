@@ -40,7 +40,6 @@ class Enemy( AbstractCharacter ):
 		
 	def update( self, pos):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
-		self._update_health()
 		
 		if(not self.recovering):
 			if(not self.mode):
@@ -54,15 +53,21 @@ class Enemy( AbstractCharacter ):
 				self.recovering = 0
 				self.recoverytimer = 0
 				self.preparedToAttack = 0
+		
+		# Finally update the health
+		self._update_health()
 	
+	def faceProtagonist(self):
+		self.image = pygame.transform.flip(self.image, 1, 0)
+		
 	def track(self,pos):
+		oldVelocity = self.velocity[0]
 		maxVelocity, negVelocity = self.maxVelocity, (-1*self.maxVelocity)
 		if(abs(self.rect.center[0]-pos[0])<200 and abs(self.rect.center[1]-pos[1])<100):
 			self.mode = 1
 		elif(abs(self.rect.center[0]-pos[0])<200):
 			if(self.rect.center[1]>pos[1]):
 				self.velocity[1]=negVelocity
-				
 			elif(abs(self.rect.center[1])<pos[1]):
 				self.velocity[1]=maxVelocity
 		elif(abs(self.rect.center[1]-pos[1])<100):
@@ -77,8 +82,14 @@ class Enemy( AbstractCharacter ):
 				self.velocity[0]=maxVelocity
 			if(self.rect.center[1]>pos[1]):
 				self.velocity[1]=negVelocity
+				
 			elif(self.rect.center[1]<pos[1]):
 				self.velocity[1]=maxVelocity
+				
+		if(self.velocity[0] == maxVelocity):
+			self.faceProtagonist()
+		elif(oldVelocity > self.velocity[0]):
+			self.faceProtagonist()
 		newpos = self.rect.move(self.velocity)
 		self.rect = newpos
 		
