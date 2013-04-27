@@ -26,7 +26,7 @@ class ComboMachine():
 		def_frames = extract_frames_from_spritesheet(def_rect, dims[0], dims[1], dims[2])
 		self.cur_state = ComboState( (def_sheet, def_rect), def_frames) 
 		self.state_map["DEFAULT"] = self.cur_state
-		self.repeat_frames, self.repeated = 8, 0	#repeat the last frame of a combo /repeat_frames/ times
+		self.repeat_frames, self.repeated = 10, 0	#repeat the last frame of a combo /repeat_frames/ times
 		self.combo_no = 0
 		#self._advance_key = K_SPACE #what key to press to advance
 		self.combo_sequence = ""
@@ -44,9 +44,7 @@ class ComboMachine():
 			self.combo_sequence = ""
 	
 	def in_default_state(self):
-		bool = self.cur_state is self.state_map["DEFAULT"]
-		if bool: self.repeated = 0
-		return bool 
+		return self.cur_state is self.state_map["DEFAULT"]
 	
 	def enter_combo(self):
 		''' Enter the combo state '''
@@ -103,7 +101,9 @@ class ComboMachine():
 			but end it if he has exceeded the max queue frames'''
 		self.combo_sequence+=keysequence
 		#print "Current Combo: ", self.combo_sequence
-		if self.in_default_state() or not self.cur_state.did_advance():
+		deft = self.in_default_state()
+		if deft or not self.cur_state.did_advance():
+			if deft: self.repeated = 0
 			#if not self.cur_state.did_advance(): print "Didn't advance: ", self.repeated
 			#print "repeated: ", self.repeated
 			self.can_advance = True
@@ -112,7 +112,7 @@ class ComboMachine():
 					self.interrupt()
 				return self.get_cur_frame_and_progress()
 			#self.frame_index = len( self.cur_frames ) - 1
-			self.repeated +=1
+			if not deft: self.repeated +=1
 		else:
 			self.can_advance = False
 			self.repeated = 0
