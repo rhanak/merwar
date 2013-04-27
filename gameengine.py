@@ -1,10 +1,11 @@
-import sys, os, pygame, json, random, csv, math
+import sys, os, pygame, json, random, csv, math, threading
 from pygame.locals import *
 from utils import *
 from mermaid import *
 from charmanager import *
 from characters import *
 from dalesutils import *
+from selectscreen import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -23,21 +24,45 @@ class GameEngine():
 		self.screen = screen
 		self.backgrounds = self.load_backgrounds()
 		self.assets_list = self.load_enemy_parameters()
-		self.char_manager = CharManager(screen)
+		self.eventThreading = threading.Event()
+		self.char_manager = CharManager(screen, self.eventThreading)
 		self.read_current_assets()
+		
+		self.eventNumber = 0
 		
 		self.whiff_sound = load_sound('bubbles.wav')
 		#self.stab_sound = load_sound('bubbleshit.wav')
 
 	def update(self):
-		background = self.backgrounds[self.curr_list_num]
-		self.screen.blit(background, (0,0))
-		#self.change_difficulty(
-		self.char_manager.update() #)
-		#self.change_page(self.char_manager.pagecheck())
-		self.update_prot_with_border_checks()
-		self.char_manager.draw(self.screen)
-		self.update_timers()
+		if(self.eventThreading.is_set()):
+			print self.eventNumber
+			if(self.eventNumber == 0):
+				# Event is fired the first time and it shows the game over screen, another event will be fired to show the game menu
+				s = pygame.Surface((self.screen.get_width(), self.screen.get_height()) )
+				self.screen.blit(s, (0,0))
+				display_text(self.screen, "GAME OVER!!!!", self.screen.get_width()/2, self.screen.get_height()/2)
+				self.eventNumber = 1
+				self.eventThreading.clear()
+			else:
+				# Event is fired a second time after so many seconds to show the game menu
+				select_screen(self.screen)
+				self.eventNumber = 0
+				self.eventThreading.clear()
+				
+				# Need to actually rest the game
+				self.char_manager.resetGame()
+				self.times = [0.0, 0.0, 0.0]
+		
+		if(self.eventNumber == 0):
+			background = self.backgrounds[self.curr_list_num]
+			self.screen.blit(background, (0,0))
+			#self.change_difficulty(
+			self.char_manager.update() #)
+			#self.change_page(self.char_manager.pagecheck())
+			self.update_prot_with_border_checks()
+			self.char_manager.draw(self.screen)
+			self.update_timers()
+		
 		pygame.display.flip()
 
 		# Just showing how you can test the health bar for the protagonist

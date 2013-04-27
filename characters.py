@@ -3,67 +3,6 @@ from pygame.locals import *
 from utils import *
 from abstractchar import AbstractCharacter
 
-class Shark(AbstractCharacter):
-	def __init__(self):
-		AbstractCharacter.__init__(self)
-		self.image, self.rect= load_image('shark.png')
-		self.image = pygame.transform.flip(self.image,1,0)
-		screen= pygame.display.get_surface()
-		self.velocity = [8,1]
-		self.area= screen.get_rect()
-		self.rect.topleft = random.randrange(30,840), random.randrange(30,570)
-		self.move = self.velocity
-		self.dizzy = 0
-		
-	def update(self, position):
-		if self.dizzy:
-			self._spin_()
-		else:
-			self._walk_()
-			
-	def _walk_(self):
-		newpos = self.rect.move(self.velocity)
-		if (self.rect.left<self.area.left or self.rect.right>self.area.right):
-			self.velocity[0]=-self.velocity[0]
-			self.velocity[1]=self.velocity[1]*random.randrange(1,3)
-			newpos=self.rect.move(self.velocity)
-			
-			# TODO Make the shark flip without actually flipping too many times
-			
-			#self.image = pygame.transform.flip(self.image,1,0)
-		if self.rect.top<self.area.top:
-			self.velocity[1]=2
-			newpos=self.rect.move(self.velocity)
-		elif self.rect.bottom>self.area.bottom:
-			self.velocity[1]=-2
-			newpos=self.rect.move(self.velocity)
-		self.rect = newpos
-
-	def _spin_(self):
-		center= self.rect.center
-		self.dizzy= self.dizzy+30
-		if self.dizzy >= 360:
-			self.dizzy = 0
-			self.image = self.original
-		else:
-			rotate = pygame.transform.rotate
-			self.image = rotate(self.original, self.dizzy)
-		self.rect = self.image.get_rect(center=center)
-		
-	def joinWith(self, other, dims):
-		new_speed = other.velocity
-		
-		# TODO need to actual make the sharks join together and follow each other
-		
-		#if new_speed[0] * self.velocity[0] < 0:
-			#self.image = pygame.transform.flip(self.image,1,0)
-		
-		
-	def stabbed(self):
-		if not self.dizzy:
-			self.dizzy=1
-			self.original= self.image;
-
 class Enemy( AbstractCharacter ):
 	def __init__( self, props, charmanager ):
 		AbstractCharacter.__init__( self )
@@ -101,7 +40,6 @@ class Enemy( AbstractCharacter ):
 		
 	def update( self, pos):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
-		self._update_health()
 		
 		if(not self.recovering):
 			if(not self.mode):
@@ -115,8 +53,15 @@ class Enemy( AbstractCharacter ):
 				self.recovering = 0
 				self.recoverytimer = 0
 				self.preparedToAttack = 0
+		
+		# Finally update the health
+		self._update_health()
 	
+	def faceProtagonist(self):
+		self.image = pygame.transform.flip(self.image, 1, 0)
+		
 	def track(self,pos):
+		oldVelocity = self.velocity[0]
 		maxVelocity, negVelocity = self.maxVelocity, (-1*self.maxVelocity)
 		if(abs(self.rect.center[0]-pos[0])<200 and abs(self.rect.center[1]-pos[1])<100):
 			self.mode = 1
@@ -137,8 +82,14 @@ class Enemy( AbstractCharacter ):
 				self.velocity[0]=maxVelocity
 			if(self.rect.center[1]>pos[1]):
 				self.velocity[1]=negVelocity
+				
 			elif(self.rect.center[1]<pos[1]):
 				self.velocity[1]=maxVelocity
+				
+		if(self.velocity[0] == maxVelocity):
+			self.faceProtagonist()
+		elif(oldVelocity > self.velocity[0]):
+			self.faceProtagonist()
 		newpos = self.rect.move(self.velocity)
 		self.rect = newpos
 		
