@@ -1,109 +1,125 @@
-import os, pygame, json, random, csv, math, threading, sys
+import pygame, random, math
 from pygame.locals import *
 from utils import *
 from dalesutils import *
 
-COMBO_BTNS = {K_a:"A", K_s:"S", K_d:"D", K_f:"F", K_SPACE:"SPACE"}
 
-class ComboState():
+
+class ComboMachine():
 	def __init__(self, (main_sheet, dims), spritesheets):
 		''' main_sheet should be a filename for the default sprite sheet
 			spritesheets should give a list of spritesheet image tuples
-			("name", "filename.jpg", (dims)) ex. None should be duplicate names.
+			("keysequence", "filename.jpg", (dims)) ex. None should be duplicate names.
 			dims should be an (x, y, k) tuple which gives the width, height
 			and number of sprite images in the sprite sheet. '''
-		self.sheet_map = []
-		for (name, filename, dims_l) in spritesheets:
+		self.state_map = {}
+		self.MAX_COMBO_LEN = 0
+		for (keysequence, filename, dims_l) in spritesheets:
 			image, img_rect = load_image_alpha(filename)
-			self.sheet_map.append((name,(image, img_rect), extract_frames_from_spritesheet(img_rect, dims_l[0], dims_l[1], dims_l[2])))
-		self.cur_sheet, self.cur_rect = load_image_alpha(main_sheet)	
-		self.cur_frames = extract_frames_from_spritesheet(self.cur_rect, dims[0], dims[1], dims[2])
-		self.def_frames = self.cur_frames
-		self.def_sheet = self.cur_sheet
-		self.def_rect = self.cur_rect
-		self.frame_index = 0
+			self.MAX_COMBO_LEN = max(self.MAX_COMBO_LEN, len(keysequence))
+			print img_rect
+			state = ComboState((image, img_rect), extract_frames_from_spritesheet(img_rect, dims_l[0], dims_l[1], dims_l[2]))
+			state.set_circular(False)
+			self.state_map[keysequence] = state
+		
+		def_sheet, def_rect = load_image_alpha(main_sheet)	
+		def_frames = extract_frames_from_spritesheet(def_rect, dims[0], dims[1], dims[2])
+		self.cur_state = ComboState( (def_sheet, def_rect), def_frames) 
+		self.state_map["DEFAULT"] = self.cur_state
 		self.repeat_frames, self.repeated = 8, 0	#repeat the last frame of a combo /repeat_frames/ times
 		self.combo_no = 0
-		self._advance_key = K_SPACE #what key to press to advance
+		#self._advance_key = K_SPACE #what key to press to advance
+		self.combo_sequence = ""
 		self.can_advance = True
-		
-	def enter_state(self, sheetname):
-		''' enter a state by its name '''
-		((self.cur_sheet, self.cur_rect), self.cur_frames) = self.find_state(sheetname)
 	
 	def interrupt(self):
 		''' Break out of the combo state to the default sheet '''
-		self._advance_key = K_SPACE #reset combo starting key to space
+		#self._advance_key = K_SPACE #reset combo starting key to space
 		self.can_advance = True
-		if self.cur_sheet is not self.def_sheet:
-			self.cur_sheet = self.def_sheet
-			self.cur_frames = self.def_frames
-			self.cur_rect = self.def_rect
+		if not self.in_default_state():
+			print "Combo chain: ", self.combo_no
+			self.cur_state = self.state_map["DEFAULT"]
 			self.combo_no = 0
-			self.frame_index = 0
-		return (self.cur_sheet, self.cur_rect), self.cur_frames
+			self.repeated = 0
+			self.combo_sequence = ""
+	
+	def in_default_state(self):
+		bool = self.cur_state is self.state_map["DEFAULT"]
+		if bool: self.repeated = 0
+		return bool 
 	
 	def enter_combo(self):
 		''' Enter the combo state '''
 		self.combo_no = 0
 		return self.advance()
 	
-	def advance(self, override = False):
-		''' Advance the combo by one state '''
-		#print 'Pressed Combo Button'
-		if self.sheet_map:
-			if override or self.can_advance:
-				self.combo_no += 1
-				self.combo_no %= len(self.sheet_map)
-				self.frame_index = 0
-				self.cur_sheet, self.cur_rect = self.sheet_map[self.combo_no-1][1]
-				self.cur_frames = self.sheet_map[self.combo_no-1][2]
-			else:
-				return None
-		return self.get_cur_frame()
-	
 	def find_state(self, sheetname):
 		''' find a state by its name '''
-		for (name, attrs, frames) in self.spritesheets:
-			if name is sheetname: return (attrs, frames)
-			
-	def get_cur_state(self):
-		return self.cur_sheet
+		if self.state_map.has_key(sheetname):
+			return self.state_map[sheetname]
+		return None
 	
 	def get_cur_frame(self):
-		#self.constrain_frame_index()
-		self.cur_image = self.cur_sheet.subsurface( self.cur_frames[self.frame_index] )
-		return self.cur_image
+		return self.cur_state.get_frame()
 		
 	def get_cur_frame_and_progress(self):
-		if self.cur_sheet is not self.def_sheet:
-			self.combo_check()
-		else:
-			self.frame_index %= len( self.cur_frames ) #default sheet, repeat
-		self.cur_image = self.cur_sheet.subsurface( self.cur_frames[self.frame_index] )
-		self.frame_index += 1
-		return self.cur_image
+		return self.cur_state.get_frame_and_progress()
+		#return self.cur_image
 		#return self.cur_sheet[old_frame]
+		
+	def try_advance_combo(self):
+		new_state = None
+		keypresses = list(self.combo_sequence)
+		frame_size = self.MAX_COMBO_LEN
+		frame_start = 0
+		#print "input: ", self.combo_sequence
+		while frame_size > 0:
+			while frame_start < (len(keypresses)):	
+				real_size = min(len(keypresses)-frame_start, frame_size)
+				if real_size <= 0: break
+				query = ''.join(keypresses[frame_start:frame_start+real_size])
+				#print "QUERY: ", query
+				new_state = self.find_state(query)
+				
+				if new_state:
+					print "COMBO FOUND: ", query
+					self.enter_combo_state(new_state)
+					return new_state
+				frame_start += 1
+			frame_size -= 1
+		return new_state
 	
-	def combo_check(self):
+	def enter_combo_state(self, state):
+		''' enter a state '''
+		state.reset()
+		self.combo_sequence = ""
+		self.repeated = 0
+		self.cur_state = state
+		self.combo_no += 1
+		self.can_advance = False
+	
+	def combo_check_and_update(self, keysequence = ""):
 		''' give the player some frame queues to advance the combo,
 			but end it if he has exceeded the max queue frames'''
-		if self.frame_index >= len( self.cur_frames ):
-			if self.repeated == 0:
-				self.select_combo_key()	#randomly select key for combo advance
-			self.display_combo_key()
+		self.combo_sequence+=keysequence
+		#print "Current Combo: ", self.combo_sequence
+		if self.in_default_state() or not self.cur_state.did_advance():
+			#if not self.cur_state.did_advance(): print "Didn't advance: ", self.repeated
+			#print "repeated: ", self.repeated
 			self.can_advance = True
-			if self.repeated >= self.repeat_frames:
-				self.interrupt()
-				return
-			self.frame_index = len( self.cur_frames ) - 1
+			if self.repeated >= self.repeat_frames or (len(self.combo_sequence)>=self.MAX_COMBO_LEN):
+				if not self.try_advance_combo():
+					self.interrupt()
+				return self.get_cur_frame_and_progress()
+			#self.frame_index = len( self.cur_frames ) - 1
 			self.repeated +=1
 		else:
 			self.can_advance = False
 			self.repeated = 0
-	
+		return self.get_cur_frame_and_progress()
+	'''
 	def get_combo_key(self):
-		return self._advance_key
+		return self._advance_key'''
 			
 	def check_combo_key(self):
 		pressed = pygame.key.get_pressed()
@@ -120,4 +136,49 @@ class ComboState():
 		keytext = COMBO_BTNS[self._advance_key]
 		disp = pygame.display.get_surface()
 		x_coord = disp.get_width()/2 - 10 * len(keytext)
-		display_text(disp, keytext, x_coord, 10, size=35)	
+		display_text(disp, keytext, x_coord, 10, size=35)
+
+class ComboState():
+		def __init__(self, image_attrs, frames, circular = True):
+			self.image, self.image_rect = image_attrs
+			self.frames = frames
+			print frames
+			self.index = 0
+			self.circular = circular
+			self.advanced = True
+			
+		def set_circular(self, circular = True):
+			self.circular = circular
+		
+		def get_frame(self, index=None):
+			if not index: 
+				index = self.index
+			return self.image.subsurface( self.frames[index] )
+			
+		def get_frame_and_progress(self):
+			self.advance(self.circular)
+			frame = self.get_frame(self.index)
+			return frame
+		
+		def did_advance(self):
+			if self.advanced:
+				self.advanced = False
+				return True
+			else:
+				return False
+			
+		def advance(self, circular = True):
+			new_index = self.index + 1
+			if circular:
+				new_index %= len(self.frames)
+			elif new_index >= len(self.frames):
+				self.advanced = False
+				return False		# repeat the frame
+			self.index = new_index 
+			self.advanced = True
+			return True			# successfully advanced the frame
+			
+		def reset(self):
+			self.index = 0
+			
+			

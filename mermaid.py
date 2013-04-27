@@ -4,17 +4,23 @@ from utils import *
 from abstractchar import AbstractCharacter
 from combostate import *
 
+COMBO_BTNS = {K_LALT:"/", K_LCTRL:"^", K_SPACE:"_"}
 
 class Mermaid( AbstractCharacter ):
-	def __init__( self, props):
+	def __init__( self, props ):
 		AbstractCharacter.__init__( self )
 		self.properties = props
-		#self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
-		#self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
-		#pass in main spritesheet, first argument as (filename, dims (x,y,k))
-		self.combo_state = ComboState(( props['sprite sheet'], (int(props['sprite width']),\
-			int( props['sprite height']), int( props['num frames'])) ),\
-			[("male", "darkmalemermaid.png",(179,90,6))] )  #list[(name,filename, dims (x,y,k))
+	
+		#combo_map stores combo states. pass it a combo string with values from
+		#the COMBO_BTNS strings above. You can add more control keys/string equivs
+		#to the dictionary (COMBO_BTNS) if you like. Make sure the strings are one char long.
+		
+		#Recommend combo_map be loaded from a CSV file at some point.
+		combo_map = [("^^^", "darkfemalemermaid.png", (180,180,4)),\
+			("^^/^", "darkfemalemermaid.png", (180,180,4)),\
+			("^_^", "darkfemalemermaid.png", (180,180,4))]
+		self.combo_state = ComboMachine(( props['sprite sheet'], (int(props['sprite width']),\
+			int( props['sprite height']), int( props['num frames'])) ), combo_map ) 
 		self.velocity = [0,0]
 		self.stabbing = 0
 		#Dale Added These
@@ -35,17 +41,34 @@ class Mermaid( AbstractCharacter ):
 		self.dodgeStatus = False
 
 	def _update_image( self ):
-		self.image = self.combo_state.get_cur_frame_and_progress()
+		self.image = self.combo_state.get_cur_frame()
 		self.image = pygame.transform.rotate(self.image, -math.degrees(self.angle))
 		if self.inited: self.rect = self.image.get_rect(center=self.rect.center)
 		#self.frame_index = frame_index
 
 	def update( self):
+		
+		combo_str = ""
+		
+		ignore_flag = False	
+		push_exit = None
+		for event in pygame.event.get():
+			if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+				push_exit = event
+			if ignore_flag: continue
+			if event.type == KEYUP:
+				if event.key in COMBO_BTNS.keys():
+					ignore_flag = True
+					combo_str+=COMBO_BTNS[event.key]
+		if push_exit: pygame.event.post(push_exit)
+		
+		self.combo_state.combo_check_and_update(combo_str)
 			
 		def sign( x ):
 			if x < 0: return -1
 			elif x > 0: return 1
 			return 0
+		
 		
 		ms = self.max_speed
 		pressed = pygame.key.get_pressed()
@@ -69,9 +92,7 @@ class Mermaid( AbstractCharacter ):
 			if pressed[ K_UP ]:
 				y_amt -= ms
 			self.velocity = [x_amt, y_amt]
-			
-		if (pressed[ self.combo_state.get_combo_key() ]):
-			self.combo_state.advance()
+					
 			
 		if (pressed[ K_RSHIFT ] or pressed[ K_LSHIFT ]):
 			self.dodgeStatus = True
