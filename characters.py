@@ -15,7 +15,7 @@ class Enemy( AbstractCharacter ):
 		self.stabbing = 0
 		self.maxVelocity = int( props['velocity'] )
 		self.velocity = [0.0,0.0]
-		self._update_image( 0 )
+		self._update_image( random.randrange(len(self.frames)))
 		self.rect = self.image.get_rect()
 		self.rect.topleft = random.randrange(700,840), random.randrange(400,570)
 		self.maxBefore = int( props['max before'] )
