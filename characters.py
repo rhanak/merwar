@@ -147,6 +147,7 @@ class Enemy( AbstractCharacter ):
 				self.continueAttack = False
 				
 	def damageEnemy(self, attackPower):
+		#self.combo_state.interrupt()
 		self.health -= attackPower
 		
 	def prepareToAttack(self):

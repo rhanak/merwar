@@ -3,7 +3,7 @@ from pygame.locals import *
 from utils import *
 from dalesutils import *
 
-DODGE_COOLDOWN = 1000
+DODGE_COOLDOWN = 2000
 
 class ComboMachine():
 	def __init__(self, main_state, spritesheets, dodging_state=None):
@@ -19,7 +19,7 @@ class ComboMachine():
 		for (keysequence, filename, dims_l) in spritesheets:
 			image, img_rect = load_image_alpha(filename)
 			self.MAX_COMBO_LEN = max(self.MAX_COMBO_LEN, len(keysequence))
-			print img_rect
+			#print img_rect
 			state = ComboState((image, img_rect), extract_frames_from_spritesheet(img_rect, dims_l[0], dims_l[1], dims_l[2]))
 			state.set_circular(False)
 			self.state_map[keysequence] = state
@@ -41,14 +41,16 @@ class ComboMachine():
 		self.combo_sequence = ""
 		self.can_advance = True
 		self.dodge_timer = pygame.time.Clock()
-		self.dodge_cd = 0
+		self.dodge_cd = DODGE_COOLDOWN
 	
-	def interrupt(self):
+	def interrupt(self, bypass_dodging=False):
 		''' Break out of the combo state to the default sheet '''
 		#self._advance_key = K_SPACE #reset combo starting key to space
 		self.can_advance = True
-		if not self.in_default_state():
+		dodge_var = bypass_dodging or not self.dodging()
+		if not self.in_default_state() and dodge_var:
 			#print "Combo chain: ", self.combo_no
+			if self.dodging(): self.dodge_cd = 0
 			self.cur_state = self.state_map["DEFAULT"]
 			self.combo_no = 0
 			self.repeated = 0
@@ -87,11 +89,9 @@ class ComboMachine():
 		#return self.cur_sheet[old_frame]
 		
 	def try_dodge(self):
-		self.dodge_cd += self.dodge_timer.tick()
-		if self.dodge_cd < DODGE_COOLDOWN:
+		if self.dodging() or self.dodge_cd < DODGE_COOLDOWN:
 			return
 		else:
-			self.dodge_cd = 0
 			self.begin_dodge()
 	
 	def begin_dodge(self):
@@ -139,14 +139,16 @@ class ComboMachine():
 		self.combo_sequence+=keysequence
 		#print "Current Combo: ", self.combo_sequence
 		deft = self.in_default_state()
+		if not self.dodging(): self.update_dodge_cd()
 		if deft or not self.cur_state.did_advance():
 			if deft: self.repeated = 0
 			#if not self.cur_state.did_advance(): print "Didn't advance: ", self.repeated
 			#print "repeated: ", self.repeated
 			self.can_advance = True
+			
 			if self.repeated >= self.repeat_frames or (len(self.combo_sequence)>=self.MAX_COMBO_LEN):
 				if not self.try_advance_combo():
-					self.interrupt()
+					self.interrupt(True)
 				return self.get_cur_frame_and_progress()
 			#self.frame_index = len( self.cur_frames ) - 1
 			if not deft: self.repeated +=1
@@ -154,32 +156,17 @@ class ComboMachine():
 			self.can_advance = False
 			self.repeated = 0
 		return self.get_cur_frame_and_progress()
-	'''
-	def get_combo_key(self):
-		return self._advance_key'''
-			
-	def check_combo_key(self):
-		pressed = pygame.key.get_pressed()
-		if( len( list(set(pressed).intersection(list(COMBO_BTNS.keys())) )) > 1):
-			return False
-		'''print "Needed to press: ", COMBO_BTNS[self._advance_key]
-		print "Key was pressed?: ", pressed[self._advance_key]'''
-		return pressed[self._advance_key]
-
-	def select_combo_key(self):
-		self._advance_key  = random.choice(list(COMBO_BTNS.keys()))
 	
-	def display_combo_key(self):
-		keytext = COMBO_BTNS[self._advance_key]
-		disp = pygame.display.get_surface()
-		x_coord = disp.get_width()/2 - 10 * len(keytext)
-		display_text(disp, keytext, x_coord, 10, size=35)
+	def update_dodge_cd(self):
+		if self.dodge_cd <= DODGE_COOLDOWN:
+			self.dodge_cd += self.dodge_timer.tick()
+			#print "DODGE COOLDOWN REMAINING: ", DODGE_COOLDOWN- self.dodge_cd
 
 class ComboState():
 		def __init__(self, image_attrs, frames, circular = True):
 			self.image, self.image_rect = image_attrs
 			self.frames = frames
-			print frames
+			#print frames
 			self.index = 0
 			self.circular = circular
 			self.advanced = True
