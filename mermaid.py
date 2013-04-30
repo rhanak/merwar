@@ -16,9 +16,9 @@ class Mermaid( AbstractCharacter ):
 		#to the dictionary (COMBO_BTNS) if you like. Make sure the strings are one char long.
 		
 		#Recommend combo_map be loaded from a CSV file at some point.
-		combo_map = [("^^^", "darkfemalemermaid.png", (180,180,4)),\
-			("^^/^", "darkfemalemermaid.png", (180,180,4)),\
-			("^_^", "darkfemalemermaid.png", (180,180,4))]
+		combo_map = [("^_^", "dervish.png", (179,179,18)),\
+			("___", "darkfemalemermaid.png", (180,180,4)),\
+			("^^^", "triplectrlattack.png", (178,178,10))]
 		self.combo_state = ComboMachine(( props['sprite sheet'], (int(props['sprite width']),\
 			int( props['sprite height']), int( props['num frames'])) ), combo_map ) 
 		self.velocity = [0,0]
@@ -27,8 +27,9 @@ class Mermaid( AbstractCharacter ):
 		self.angle = 0
 		self.inited = False
 		self.max_speed = 15
-		self.decay = 3;
+		self.decay = 3
 		#end adds
+		self.facing_right = True
 		self._update_image()
 		self.rect = self.image.get_rect()
 		self.rect.top = int( props['start y'] )
@@ -38,11 +39,14 @@ class Mermaid( AbstractCharacter ):
 		self.health = 100
 		self.dead = 0
 		#tempvars
+		
 		self.dodgeStatus = False
 
 	def _update_image( self ):
 		self.image = self.combo_state.get_cur_frame()
-		self.image = pygame.transform.rotate(self.image, -math.degrees(self.angle))
+		self.image = pygame.transform.rotate(\
+			pygame.transform.flip(self.image, not self.facing_right, False), \
+						 -math.degrees(self.angle) )
 		if self.inited: self.rect = self.image.get_rect(center=self.rect.center)
 		#self.frame_index = frame_index
 
@@ -84,8 +88,10 @@ class Mermaid( AbstractCharacter ):
 			self.combo_state.interrupt()
 			x_amt = y_amt = 0 
 			if pressed[ K_RIGHT ]:
+				self.facing_right = True
 				x_amt += ms
 			if pressed[ K_LEFT ]:
+				self.facing_right = False
 				x_amt -= ms
 			if pressed[ K_DOWN ]:
 				y_amt += ms
@@ -99,7 +105,8 @@ class Mermaid( AbstractCharacter ):
 		else:
 			self.dodgeStatus = False
 		
-		self.angle = math.atan2(self.velocity[1], self.velocity[0])
+		self.angle = math.atan2(self.velocity[1], abs(self.velocity[0]))
+		if not self.facing_right: self.angle = -self.angle
 		newpos = self.rect.move(self.velocity)
 		self.clampx(newpos, 0, 900)
 		
