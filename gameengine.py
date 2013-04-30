@@ -39,6 +39,10 @@ class GameEngine():
 	def update(self):
 		self.gameConditions.update()
 		
+		if(self.page_num == 2 and not self.char_manager.evil):
+			self.gameConditions.win()
+			#print "You won!"
+		
 		if(self.gameConditions.isNormalPlay()):
 			background = self.backgrounds[self.curr_list_num]
 			self.screen.blit(background, (0,0))
@@ -51,8 +55,7 @@ class GameEngine():
 		
 		pygame.display.flip()
 		
-		if(self.page_num == 2 and not self.char_manager.evil):
-			print "Display win condition"
+		
 		
 		# Just showing how you can test the health bar for the protagonist
 		for event in pygame.event.get():
@@ -66,6 +69,9 @@ class GameEngine():
 	def resetGame(self):
 		self.char_manager.resetGame()
 		self.times = [0.0, 0.0, 0.0]
+		
+		# Reload the enemies
+		self.read_current_assets()
 				
 	def load_backgrounds(self):
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()

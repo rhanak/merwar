@@ -1,4 +1,4 @@
-import sys, os, pygame, json, random, csv, math, threading
+import sys, os, pygame, json, random, csv, math, threading, time
 from pygame.locals import *
 from utils import *
 from mermaid import *
@@ -13,8 +13,11 @@ class GameConditions():
 			self.screen = screen
 			self.eventThreading = eventThreading
 			self.resetGame = resetGame
+			self.gameWon = False
+			self.gameWonTimer = None
 			
 		def update(self):
+			# OOh did you lose? :(
 			if(self.eventThreading.is_set()):
 				print self.eventNumber
 				if(self.eventNumber == 0):
@@ -32,9 +35,32 @@ class GameConditions():
 
 					# Need to actually rest the game
 					self.resetGame()
-			
+			# Have we won the Game		
+			elif(self.gameWon):
+					#print "now you are cool"
+					s = pygame.Surface((self.screen.get_width(), self.screen.get_height()) )
+					s.fill((255,255,255))
+					self.screen.blit(s, (0,0))
+					display_text(self.screen, "YOU WON!!!!", self.screen.get_width()/2, self.screen.get_height()/2)
+					if(not self.gameWonTimer):
+						self.gameWonTimer = time.time()
+					
+					# timer expires you know you have won ;)
+					if((time.time() - self.gameWonTimer) > 2):
+						# Ok you are finishing winning now ...
+						self.gameWon = False
+						self.gameWonTimer = None
+						# Display the main menu
+						select_screen(self.screen)
+
+						# Need to actually rest the game
+						self.resetGame()
+					
+		def win(self):
+			self.gameWon = True
+		
 		def isNormalPlay(self):
-			if(self.eventNumber == 0):
+			if(self.eventNumber == 0 and not self.gameWon):
 				return True
 			else:
 				return False
