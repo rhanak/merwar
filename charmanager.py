@@ -71,6 +71,7 @@ class CharManager():
 		self.check_prot_attack_evil()
 		self.evil.update(self.prot.get_position())
 		self.prot.update()
+		self.check_use_items()
 		self.items.update()
 		self.healthbars.update()
 		#return self.difficulty()
@@ -155,9 +156,9 @@ class CharManager():
 		'''add in type differences'''
 		for x in range(0,num_enemies):
 			if(type_enemies=='df'):
-				self.evil.add(Enemy(self.propsfiles[1], self))
+				self.evil.add(Enemy(self.propsfiles[1], self, type='df'))
 			elif(type_enemies=='dm'):
-				self.evil.add(Enemy(self.propsfiles[2], self))
+				self.evil.add(Enemy(self.propsfiles[2], self, type='dm'))
 		
 	def set_items(self, item_num):
 		if not self.items:
@@ -165,6 +166,12 @@ class CharManager():
 		self.items.empty()
 		for x in range(item_num):
 			self.items.add(Item())
+			
+	def check_use_items(self):
+		if self.items:
+			for item in pygame.sprite.spritecollide(self.prot,self.items,dokill=False):
+				if self.prot.increaseHealth(item.get_value()):
+					item.kill()
 				
 	def evil_helper(self, spriteA, spriteB):
 		spriteA.joinWith(spriteB, None)

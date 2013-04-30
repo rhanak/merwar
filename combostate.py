@@ -37,7 +37,7 @@ class ComboMachine():
 		#self._advance_key = K_SPACE #reset combo starting key to space
 		self.can_advance = True
 		if not self.in_default_state():
-			print "Combo chain: ", self.combo_no
+			#print "Combo chain: ", self.combo_no
 			self.cur_state = self.state_map["DEFAULT"]
 			self.combo_no = 0
 			self.repeated = 0
@@ -45,6 +45,9 @@ class ComboMachine():
 	
 	def in_default_state(self):
 		return self.cur_state is self.state_map["DEFAULT"]
+	
+	def get_num_frames(self):
+		return len(self.cur_state.frames)
 	
 	def enter_combo(self):
 		''' Enter the combo state '''
@@ -57,8 +60,11 @@ class ComboMachine():
 			return self.state_map[sheetname]
 		return None
 	
-	def get_cur_frame(self):
+	def get_cur_frame(self, opt_index=-1):
+		if opt_index>=0:
+			self.cur_state.index = opt_index	
 		return self.cur_state.get_frame()
+		
 		
 	def get_cur_frame_and_progress(self):
 		return self.cur_state.get_frame_and_progress()
@@ -86,6 +92,10 @@ class ComboMachine():
 				frame_start += 1
 			frame_size -= 1
 		return new_state
+	
+	def enter_combo_str(self, str):
+		state = self.find_state(str)
+		self.enter_combo_state(state)
 	
 	def enter_combo_state(self, state):
 		''' enter a state '''
@@ -150,9 +160,15 @@ class ComboState():
 		def set_circular(self, circular = True):
 			self.circular = circular
 		
-		def get_frame(self, index=None):
-			if not index: 
+		def get_frame(self, index=-1):
+			if index<0: 
 				index = self.index
+			elif index >= len(self.frames):
+				if self.circular:
+					index %= len(self.frames)
+				else:
+					index = len(self.frames)-1
+			self.index = index
 			return self.image.subsurface( self.frames[index] )
 			
 		def get_frame_and_progress(self):

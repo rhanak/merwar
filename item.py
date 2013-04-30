@@ -12,6 +12,7 @@ class Item(pygame.sprite.Sprite):
 		self.base_image, b = load_image_alpha("item.png")
 		self.rect.left = random.randrange(range_x[0], range_x[1] - self.rect.width)
 		self.rect.top = random.randrange(range_y[0], range_y[1] - self.rect.height)
+		self.value = 25
 		
 	def update(self):
 		#self.time_since_last_rot += self.clock.tick()
@@ -22,3 +23,6 @@ class Item(pygame.sprite.Sprite):
 		self.degrees = self.degrees % 360
 		self.image = pygame.transform.rotate(self.base_image, -self.degrees)
 		self.rect = self.image.get_rect(center=self.rect.center)
+		
+	def get_value(self):
+		return self.value

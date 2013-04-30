@@ -166,7 +166,11 @@ class Mermaid( AbstractCharacter ):
 			self.notify(("health", "decreased", attackPower))
 		
 	def increaseHealth(self, value):
+		if self.health == 100:
+			return False
 		self.health+=value
 		if(self.health>100):
 			self.health = 100
 		self.notify(("health", "increased", value))
+		print "Health increased"
+		return True

@@ -2,20 +2,35 @@ import os, pygame, json, random, csv, math
 from pygame.locals import *
 from utils import *
 from abstractchar import AbstractCharacter
+from combostate import *
 
 class Enemy( AbstractCharacter ):
-	def __init__( self, props, charmanager ):
+	def __init__( self, props, charmanager, type="df" ):
 		AbstractCharacter.__init__( self )
 		self.manager = charmanager
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
-		self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
+		width, height = int(props['sprite width']), int(props['sprite height'])
+		num_frames = int( props['num frames'] )
+		###BEGIN CLUNKY IF STATEMENTS CHECKING ENEMY TYPE###
+		if type == "df":
+			combo_map = [("pullback", "dfpullback.png", (width-1, height-1, 2)),\
+							("attack", "dfattack.png",(width-1, height-1, 3))]
+		elif type == "dm":
+			combo_map = [("pullback", "dmpullback.png", (width, height, 2)),\
+							("attack", "dmattack.png", (width, height, 4))]
+		else:
+			combo_map = None
+		###END CLUNKY IF STATEMENTS###
+		self.combo_state = ComboMachine( (props['sprite sheet'], (width, height, num_frames)),\
+					combo_map)
+		#self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
 		self.attackPower = int( props['attack power'] )
 		self.defenseBoost = int( props['defense boost'] )
 		self.stabbing = 0
 		self.maxVelocity = int( props['velocity'] )
 		self.velocity = [0.0,0.0]
-		self._update_image( random.randrange(len(self.frames)))
+		self._update_image( random.randrange(self.combo_state.get_num_frames()) )
 		self.rect = self.image.get_rect()
 		self.rect.topleft = random.randrange(700,840), random.randrange(400,570)
 		self.maxBefore = int( props['max before'] )
@@ -33,11 +48,10 @@ class Enemy( AbstractCharacter ):
 		# They then float up the screen and "kill()" themself off screen
 		self.dying = False
 		
-	def _update_image( self, frame_index ):
+	def _update_image( self, frame_index=-1 ):
 		#print "Frame is %d" % frame_index
 		#print "and length in %d" % len(self.frames)
-		self.image = self.sprite_sheet.subsurface( self.frames[ frame_index ] )
-		self.frame_index = frame_index
+		self.image = self.combo_state.get_cur_frame(frame_index)
 		
 	def _update_health(self):
 		self.image.fill((0,0,0), pygame.Rect(50,0, 100, 10))
@@ -47,11 +61,13 @@ class Enemy( AbstractCharacter ):
 			self.i_am_dead()
 		
 	def update( self, pos):
+		
 		if(self.dying):
 			self.dying_update()
 		else:
-			self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
-		
+			self.combo_state.combo_check_and_update()
+			self._update_image()
+			
 			if(not self.recovering):
 				if(not self.mode):
 					self.track(pos)
@@ -67,6 +83,7 @@ class Enemy( AbstractCharacter ):
 		
 			# Finally update the health
 			self._update_health()
+			
 			
 	def i_am_dead(self):
 		self.image = pygame.transform.flip(self.image, 0, 1)
@@ -133,6 +150,7 @@ class Enemy( AbstractCharacter ):
 		self.health -= attackPower
 		
 	def prepareToAttack(self):
+		self.combo_state.enter_combo_str("pullback")
 		pull_back = load_sound('enemypullback.wav')
 		pull_back.play()
 		#animate pull back
@@ -140,8 +158,10 @@ class Enemy( AbstractCharacter ):
 	def attack(self):
 		miss = load_sound('bubbles.wav')
 		hit = load_sound('bubbleshit.wav')
+		self.combo_state.enter_combo_str("attack")
 		if self.manager.checkPositionStatus(self.rect.center):
 			self.continueAttack = False
+			self.combo_state.interrupt()
 		if(self.continueAttack):
 			#animate attack
 			#print "attackPower %d" % self.attackPower
@@ -150,7 +170,7 @@ class Enemy( AbstractCharacter ):
 			#self.damageEnemy(self.attackPower)
 			hit.play()
 		else:
-			#animate attack
+			self.combo_state.interrupt()
 			miss.play()
 		self.recovering = 1
 		self.continueAttack = True
