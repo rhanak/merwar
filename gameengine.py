@@ -29,7 +29,7 @@ class GameEngine():
 		# A thread inside Character manager uses this to communicate with the main thread
 		self.eventThreading = threading.Event()
 		self.char_manager = CharManager(screen, self.eventThreading)
-		self.gameConditions = GameConditions(screen, self.eventThreading, self.resetGame)
+		self.gameConditions = GameConditions(screen, self.eventThreading, self.resetGame, self.times)
 		
 		self.read_current_assets()
 		

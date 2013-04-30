@@ -8,13 +8,14 @@ from dalesutils import *
 from selectscreen import *
 
 class GameConditions():
-		def __init__( self, screen, eventThreading, resetGame ):
+		def __init__( self, screen, eventThreading, resetGame, times ):
 			self.eventNumber = 0
 			self.screen = screen
 			self.eventThreading = eventThreading
 			self.resetGame = resetGame
 			self.gameWon = False
 			self.gameWonTimer = None
+			self.times = times
 			
 		def update(self):
 			# OOh did you lose? :(
@@ -41,12 +42,20 @@ class GameConditions():
 					s = pygame.Surface((self.screen.get_width(), self.screen.get_height()) )
 					s.fill((255,255,255))
 					self.screen.blit(s, (0,0))
-					display_text(self.screen, "YOU WON!!!!", self.screen.get_width()/2, self.screen.get_height()/2)
+					display_text(self.screen, "Time spent Easy: %d seconds" % (self.times[0]/1000), self.screen.get_width()/2 - 20, self.screen.get_height()/2 - 240)
+					display_text(self.screen, "Time spent Medium: %d seconds" % (self.times[1]/1000), self.screen.get_width()/2 - 20, self.screen.get_height()/2 - 210)
+					display_text(self.screen, "Time spent Hard: %d seconds" % (self.times[2]/1000), self.screen.get_width()/2 - 20, self.screen.get_height()/2 - 180)
+					
+					# Just weighted addition of scores in the different levels
+					score = self.times[0] * .1 + self.times[1] * .3 + self.times[2] * .6
+					
+					display_text(self.screen, "New Score: %d" % score, self.screen.get_width()/2 - 20, self.screen.get_height()/2 - 50)
+					display_text(self.screen, "YOU WON!!!!", self.screen.get_width()/2 - 20, self.screen.get_height()/2)
 					if(not self.gameWonTimer):
 						self.gameWonTimer = time.time()
 					
 					# timer expires you know you have won ;)
-					if((time.time() - self.gameWonTimer) > 2):
+					if((time.time() - self.gameWonTimer) > 5):
 						# Ok you are finishing winning now ...
 						self.gameWon = False
 						self.gameWonTimer = None
