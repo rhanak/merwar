@@ -51,7 +51,8 @@ class GameEngine():
 		
 		pygame.display.flip()
 		
-		#print self.page_num
+		if(self.page_num == 2 and not self.char_manager.evil):
+			print "Display win condition"
 		
 		# Just showing how you can test the health bar for the protagonist
 		for event in pygame.event.get():

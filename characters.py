@@ -74,6 +74,10 @@ class Enemy( AbstractCharacter ):
 	
 	def dying_update(self):
 		self.rect.move_ip(0, -5)
+		
+		# Once the enemy moves off screen remove it from all groups
+		if(self.rect.y < 0):
+			self.kill()
 	
 	def faceProtagonist(self):
 		self.image = pygame.transform.flip(self.image, 1, 0)
