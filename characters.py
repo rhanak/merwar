@@ -40,6 +40,9 @@ class Enemy( AbstractCharacter ):
 		self.image.fill((0,0,0), pygame.Rect(50,0, 100, 10))
 		self.image.fill((255,255,255), pygame.Rect(50,0, self.health, 10))
 		
+		if(self.health < 1):
+			self.kill()
+		
 	def update( self, pos):
 		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
 		

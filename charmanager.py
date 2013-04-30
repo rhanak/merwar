@@ -64,7 +64,7 @@ class CharManager():
 		for enemy in listc:
 			if(not self.prot.combo_state.in_default_state()):
 				enemy.damageEnemy(self.prot.attackPower)
-				print "This enemy is being attacked by prot %s" % enemy
+				#print "This enemy is being attacked by prot %s" % enemy
 	
 	def update( self ):
 		self.evil_collide()
