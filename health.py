@@ -58,7 +58,7 @@ class HealthBar(pygame.sprite.Sprite):
 		self.image = pygame.Surface([self.width, self.height])
 		self.rect = self.image.get_rect()
 		
-		self.health = .9
+		self.health = 1
 		
 	def update(self):
 		health_width = self.width * self.health
