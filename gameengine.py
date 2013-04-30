@@ -50,7 +50,9 @@ class GameEngine():
 			self.update_timers()
 		
 		pygame.display.flip()
-
+		
+		#print self.page_num
+		
 		# Just showing how you can test the health bar for the protagonist
 		for event in pygame.event.get():
 			if event.type == QUIT:

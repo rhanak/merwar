@@ -58,9 +58,17 @@ class CharManager():
 			listc = pygame.sprite.spritecollide( sprite, ev_copy, dokill = False)
 			for clsn in listc:
 				self.evil_helper(sprite, clsn)
+				
+	def check_prot_attack_evil( self ):
+		listc = pygame.sprite.spritecollide( self.prot, self.evil, dokill = False)
+		for enemy in listc:
+			if(not self.prot.combo_state.in_default_state()):
+				enemy.damageEnemy(self.prot.attackPower)
+				print "This enemy is being attacked by prot %s" % enemy
 	
 	def update( self ):
 		self.evil_collide()
+		self.check_prot_attack_evil()
 		self.evil.update(self.prot.get_position())
 		self.prot.update()
 		self.items.update()

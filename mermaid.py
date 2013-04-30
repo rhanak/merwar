@@ -34,6 +34,7 @@ class Mermaid( AbstractCharacter ):
 		self.rect = self.image.get_rect()
 		self.rect.top = int( props['start y'] )
 		self.rect.left = int( props['start x'] )
+		self.attackPower = int( props['attack power'] )
 		self.inited = True
 		self.changeDifficulties = 0
 		self.health = 100

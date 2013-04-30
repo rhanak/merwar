@@ -1,4 +1,4 @@
 character,sprite sheet,num frames,frames per second,sprite width,sprite height,start x,start y,attack power,defense boost,velocity,max between,max before
-mermaid,mermaid.png,12,1,180,180,10,295,,,,,
+mermaid,mermaid.png,12,1,180,180,10,295,10,,,,
 darkfemalemermaid,darkfemalemermaid.png,8,1,180,180,700,300,10,0,4,50,10
 darkmalemermaid,darkmalemermaid.png,8,1,359,270,700,300,16,2,2,45,8
