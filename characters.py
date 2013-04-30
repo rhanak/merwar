@@ -163,6 +163,7 @@ class Enemy( AbstractCharacter ):
 		if self.manager.checkPositionStatus(self.rect.center):
 			self.continueAttack = False
 			self.combo_state.interrupt()
+			self.preparedToAttack = 0
 		if(self.continueAttack):
 			#animate attack
 			#print "attackPower %d" % self.attackPower
@@ -172,6 +173,7 @@ class Enemy( AbstractCharacter ):
 			hit.play()
 		else:
 			self.combo_state.interrupt()
+			self.preparedToAttack = 0
 			miss.play()
 		self.recovering = 1
 		self.continueAttack = True

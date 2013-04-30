@@ -16,9 +16,9 @@ class Mermaid( AbstractCharacter ):
 		#to the dictionary (COMBO_BTNS) if you like. Make sure the strings are one char long.
 		
 		#Recommend combo_map be loaded from a CSV file at some point.
-		combo_map = [("^_^", "dervish.png", (179,179,18)),\
-			("___", "darkfemalemermaid.png", (180,180,4)),\
-			("^^^", "triplectrlattack.png", (178,178,10))]
+		combo_map = [("^_^", "dervish.png", (180,180,18)),\
+			("^/^", "ctrlaltctrl.png", (180,180,15)),\
+			("^^^", "triplectrlattack.png", (180,180,10))]
 		dodging = ("dodge.png", (180,180,5))
 		self.combo_state = ComboMachine(( props['sprite sheet'], (int(props['sprite width']),\
 			int( props['sprite height']), int( props['num frames'])) ), combo_map, dodging ) 

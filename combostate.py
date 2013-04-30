@@ -20,12 +20,12 @@ class ComboMachine():
 			image, img_rect = load_image_alpha(filename)
 			self.MAX_COMBO_LEN = max(self.MAX_COMBO_LEN, len(keysequence))
 			#print img_rect
-			state = ComboState((image, img_rect), extract_frames_from_spritesheet(img_rect, dims_l[0], dims_l[1], dims_l[2]))
+			state = ComboState((image, img_rect), extract_frames_from_spritesheet(img_rect, dims_l[0]-1, dims_l[1]-1, dims_l[2]))
 			state.set_circular(False)
 			self.state_map[keysequence] = state
 		
 		def_sheet, def_rect = load_image_alpha(main_sheet)	
-		def_frames = extract_frames_from_spritesheet(def_rect, dims[0], dims[1], dims[2])
+		def_frames = extract_frames_from_spritesheet(def_rect, dims[0], dims[1]-1, dims[2])
 		self.cur_state = ComboState( (def_sheet, def_rect), def_frames) 
 		self.state_map["DEFAULT"] = self.cur_state
 		if dodging_state: 
