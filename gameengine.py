@@ -68,7 +68,10 @@ class GameEngine():
 	
 	def resetGame(self):
 		self.char_manager.resetGame()
-		self.times = [0.0, 0.0, 0.0]
+		
+		# Reset the timers
+		for i in range(0,len(self.times)):
+			self.times[i] = 0.0
 		
 		# Reload the enemies
 		self.read_current_assets()
