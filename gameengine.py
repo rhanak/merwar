@@ -75,6 +75,10 @@ class GameEngine():
 		
 		# Reload the enemies
 		self.read_current_assets()
+		
+		# Move the protoganist to the first page
+		self.char_manager.move_protagonist((100, 300))
+		self.change_page_by_offset(-2)
 				
 	def load_backgrounds(self):
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()
