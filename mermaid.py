@@ -87,7 +87,7 @@ class Mermaid( AbstractCharacter ):
 				if abs(self.velocity[0])<self.decay: self.velocity[0]=0
 				if abs(self.velocity[1])<self.decay: self.velocity[1]=0
 		else:
-			self.combo_state.interrupt()
+			self.combo_state.interrupt(True)
 			x_amt = y_amt = 0 
 			if pressed[ K_RIGHT ]:
 				self.facing_right = True
