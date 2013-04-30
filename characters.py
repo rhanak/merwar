@@ -29,6 +29,9 @@ class Enemy( AbstractCharacter ):
 		self.recoverytimer = random.randrange(0,self.maxBefore)
 		self.preparedToAttack = 0
 		self.continueAttack = True
+		# This changes when the health of this Enemy goes down to nothing
+		# They then float up the screen and "kill()" themself off screen
+		self.dying = False
 		
 	def _update_image( self, frame_index ):
 		#print "Frame is %d" % frame_index
@@ -41,26 +44,36 @@ class Enemy( AbstractCharacter ):
 		self.image.fill((255,255,255), pygame.Rect(50,0, self.health, 10))
 		
 		if(self.health < 1):
-			self.kill()
+			self.i_am_dead()
 		
 	def update( self, pos):
-		self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
-		
-		if(not self.recovering):
-			if(not self.mode):
-				self.track(pos)
-			else:
-				self.combat(pos)
+		if(self.dying):
+			self.dying_update()
 		else:
-			self.recoverytimer += 1
-			
-			if(self.recoverytimer>random.randrange(self.maxBetween-10,self.maxBetween)):
-				self.recovering = 0
-				self.recoverytimer = 0
-				self.preparedToAttack = 0
+			self._update_image( ( self.frame_index + 1 ) % len( self.frames ) )
 		
-		# Finally update the health
-		self._update_health()
+			if(not self.recovering):
+				if(not self.mode):
+					self.track(pos)
+				else:
+					self.combat(pos)
+			else:
+				self.recoverytimer += 1
+			
+				if(self.recoverytimer>random.randrange(self.maxBetween-10,self.maxBetween)):
+					self.recovering = 0
+					self.recoverytimer = 0
+					self.preparedToAttack = 0
+		
+			# Finally update the health
+			self._update_health()
+			
+	def i_am_dead(self):
+		self.image = pygame.transform.flip(self.image, 0, 1)
+		self.dying = True
+	
+	def dying_update(self):
+		self.rect.move_ip(0, -5)
 	
 	def faceProtagonist(self):
 		self.image = pygame.transform.flip(self.image, 1, 0)
