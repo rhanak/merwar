@@ -62,7 +62,8 @@ class CharManager():
 	def check_prot_attack_evil( self ):
 		listc = pygame.sprite.spritecollide( self.prot, self.evil, dokill = False)
 		for enemy in listc:
-			if(not self.prot.combo_state.in_default_state()):
+			if(not self.prot.combo_state.in_default_state()\
+				and not self.prot.combo_state.dodging()):
 				enemy.damageEnemy(self.prot.attackPower)
 				#print "This enemy is being attacked by prot %s" % enemy
 	

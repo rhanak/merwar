@@ -3,15 +3,17 @@ from pygame.locals import *
 from utils import *
 from dalesutils import *
 
-
+DODGE_COOLDOWN = 1000
 
 class ComboMachine():
-	def __init__(self, (main_sheet, dims), spritesheets):
-		''' main_sheet should be a filename for the default sprite sheet
+	def __init__(self, main_state, spritesheets, dodging_state=None):
+		''' main_state and dodging_state are tuples (filename, (dims))
 			spritesheets should give a list of spritesheet image tuples
 			("keysequence", "filename.jpg", (dims)) ex. None should be duplicate names.
 			dims should be an (x, y, k) tuple which gives the width, height
-			and number of sprite images in the sprite sheet. '''
+			and number of sprite images in the sprite sheet.
+			'''
+		main_sheet, dims = main_state
 		self.state_map = {}
 		self.MAX_COMBO_LEN = 0
 		for (keysequence, filename, dims_l) in spritesheets:
@@ -26,11 +28,20 @@ class ComboMachine():
 		def_frames = extract_frames_from_spritesheet(def_rect, dims[0], dims[1], dims[2])
 		self.cur_state = ComboState( (def_sheet, def_rect), def_frames) 
 		self.state_map["DEFAULT"] = self.cur_state
+		if dodging_state: 
+			dodge_name, dodge_dims = dodging_state
+			dodge_image, dodge_rect = load_image_alpha(dodge_name)
+			dodge_state = ComboState( (dodge_image, dodge_rect),\
+				extract_frames_from_spritesheet(dodge_rect, dodge_dims[0]-1, dodge_dims[1]-1, dodge_dims[2]))
+			dodge_state.set_circular(False)
+			self.state_map["DODGING"]  = dodge_state
 		self.repeat_frames, self.repeated = 10, 0	#repeat the last frame of a combo /repeat_frames/ times
 		self.combo_no = 0
 		#self._advance_key = K_SPACE #what key to press to advance
 		self.combo_sequence = ""
 		self.can_advance = True
+		self.dodge_timer = pygame.time.Clock()
+		self.dodge_cd = 0
 	
 	def interrupt(self):
 		''' Break out of the combo state to the default sheet '''
@@ -45,7 +56,12 @@ class ComboMachine():
 	
 	def in_default_state(self):
 		return self.cur_state is self.state_map["DEFAULT"]
-	
+		
+	def dodging(self):
+		if self.state_map.has_key("DODGING"):
+			return self.cur_state is self.state_map["DODGING"]
+		return False
+			
 	def get_num_frames(self):
 		return len(self.cur_state.frames)
 	
@@ -63,13 +79,24 @@ class ComboMachine():
 	def get_cur_frame(self, opt_index=-1):
 		if opt_index>=0:
 			self.cur_state.index = opt_index	
-		return self.cur_state.get_frame()
-		
+		return self.cur_state.get_frame()	
 		
 	def get_cur_frame_and_progress(self):
 		return self.cur_state.get_frame_and_progress()
 		#return self.cur_image
 		#return self.cur_sheet[old_frame]
+		
+	def try_dodge(self):
+		self.dodge_cd += self.dodge_timer.tick()
+		if self.dodge_cd < DODGE_COOLDOWN:
+			return
+		else:
+			self.dodge_cd = 0
+			self.begin_dodge()
+	
+	def begin_dodge(self):
+		if self.state_map.has_key("DODGING"):
+			self.enter_combo_str("DODGING")
 		
 	def try_advance_combo(self):
 		new_state = None

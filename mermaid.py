@@ -19,8 +19,9 @@ class Mermaid( AbstractCharacter ):
 		combo_map = [("^_^", "dervish.png", (179,179,18)),\
 			("___", "darkfemalemermaid.png", (180,180,4)),\
 			("^^^", "triplectrlattack.png", (178,178,10))]
+		dodging = ("dodge.png", (180,180,5))
 		self.combo_state = ComboMachine(( props['sprite sheet'], (int(props['sprite width']),\
-			int( props['sprite height']), int( props['num frames'])) ), combo_map ) 
+			int( props['sprite height']), int( props['num frames'])) ), combo_map, dodging ) 
 		self.velocity = [0,0]
 		self.stabbing = 0
 		#Dale Added These
@@ -36,7 +37,7 @@ class Mermaid( AbstractCharacter ):
 		self.rect.left = int( props['start x'] )
 		self.attackPower = int( props['attack power'] )
 		self.inited = True
-		self.changeDifficulties = 0
+		#self.changeDifficulties = 0
 		self.health = 100
 		self.dead = 0
 		#tempvars
@@ -102,9 +103,9 @@ class Mermaid( AbstractCharacter ):
 					
 			
 		if (pressed[ K_RSHIFT ] or pressed[ K_LSHIFT ]):
-			self.dodgeStatus = True
-		else:
-			self.dodgeStatus = False
+			self.combo_state.try_dodge()
+		#else:
+		#	self.dodgeStatus = False
 		
 		self.angle = math.atan2(self.velocity[1], abs(self.velocity[0]))
 		if not self.facing_right: self.angle = -self.angle
@@ -155,7 +156,7 @@ class Mermaid( AbstractCharacter ):
 		return self.rect.center
 
 	def isDodging(self):
-		return self.dodgeStatus
+		return self.combo_state.dodging()
 
 	def decreaseHealth(self, attackPower):
 		if not self.dodgeStatus:
