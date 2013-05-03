@@ -19,7 +19,7 @@ class Mermaid( AbstractCharacter ):
 		combo_map = [("^_^", "dervish.png", (180,180,18)),\
 			("^/^", "ctrlaltctrl.png", (180,180,15)),\
 			("^^^", "triplectrlattack.png", (180,180,10))]
-		dodging = ("dodge.png", (180,180,5))
+		dodging = ("dodge.png", (180,180,6))
 		self.combo_state = ComboMachine(( props['sprite sheet'], (int(props['sprite width']),\
 			int( props['sprite height']), int( props['num frames'])) ), combo_map, dodging ) 
 		self.velocity = [0,0]
@@ -35,7 +35,7 @@ class Mermaid( AbstractCharacter ):
 		self.rect = self.image.get_rect()
 		self.rect.top = int( props['start y'] )
 		self.rect.left = int( props['start x'] )
-		self.attackPower = int( props['attack power'] )
+		self.attackPower = self.base_attack = int( props['attack power'] )
 		self.inited = True
 		#self.changeDifficulties = 0
 		self.health = 100
@@ -69,6 +69,7 @@ class Mermaid( AbstractCharacter ):
 		if push_exit: pygame.event.post(push_exit)
 		
 		self.combo_state.combo_check_and_update(combo_str)
+		self.attackPower = int(self.base_attack * self.combo_state.get_dmg_multiplier())
 			
 		def sign( x ):
 			if x < 0: return -1

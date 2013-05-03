@@ -3,7 +3,7 @@ from pygame.locals import *
 from utils import *
 from dalesutils import *
 
-DODGE_COOLDOWN = 2000
+DODGE_COOLDOWN = 1250
 
 class ComboMachine():
 	def __init__(self, main_state, spritesheets, dodging_state=None):
@@ -67,11 +67,6 @@ class ComboMachine():
 	def get_num_frames(self):
 		return len(self.cur_state.frames)
 	
-	def enter_combo(self):
-		''' Enter the combo state '''
-		self.combo_no = 0
-		return self.advance()
-	
 	def find_state(self, sheetname):
 		''' find a state by its name '''
 		if self.state_map.has_key(sheetname):
@@ -127,19 +122,28 @@ class ComboMachine():
 	def enter_combo_state(self, state):
 		''' enter a state '''
 		state.reset()
+		if(state == self.cur_state):
+			state.reduce_multiplier()
+		else:
+			state.reset_multiplier()
 		self.combo_sequence = ""
 		self.repeated = 0
 		self.cur_state = state
 		self.combo_no += 1
 		self.can_advance = False
+		
+	def get_damage_multiplier(self):
+		return self.cur_state.diminish_multiplier
 	
 	def combo_check_and_update(self, keysequence = ""):
 		''' give the player some frame queues to advance the combo,
 			but end it if he has exceeded the max queue frames'''
+		if(self.state_map.has_key("DODGING")):self.display_combo()
 		self.combo_sequence+=keysequence
 		#print "Current Combo: ", self.combo_sequence
 		deft = self.in_default_state()
 		if not self.dodging(): self.update_dodge_cd()
+		else: self.dodge_timer.tick()
 		if deft or not self.cur_state.did_advance():
 			if deft: self.repeated = 0
 			#if not self.cur_state.did_advance(): print "Didn't advance: ", self.repeated
@@ -156,11 +160,21 @@ class ComboMachine():
 			self.can_advance = False
 			self.repeated = 0
 		return self.get_cur_frame_and_progress()
+		
+	def display_combo(self):
+		screen = pygame.display.get_surface()
+		wid = screen.get_width()
+		display_rage_text(screen, "Combo: " + str(self.combo_no), wid - 250, 10, 30)
+		display_rage_text(screen, "Dmg Multiplier: "\
+			 + "{0:.2f}".format(self.get_dmg_multiplier()), wid - 250, 60, 30)
 	
 	def update_dodge_cd(self):
 		if self.dodge_cd <= DODGE_COOLDOWN:
 			self.dodge_cd += self.dodge_timer.tick()
 			#print "DODGE COOLDOWN REMAINING: ", DODGE_COOLDOWN- self.dodge_cd
+			
+	def get_dmg_multiplier(self):
+		return self.cur_state.diminish_multiplier
 
 class ComboState():
 		def __init__(self, image_attrs, frames, circular = True):
@@ -169,11 +183,26 @@ class ComboState():
 			#print frames
 			self.index = 0
 			self.circular = circular
+			self.until_diminish = 0
+			self.diminish_multiplier = 1.0
 			self.advanced = True
 			
+		def reduce_multiplier(self):
+			if (self.until_diminish > 0):
+				self.until_diminish-=1
+				return True
+			else:
+				dim_m = self.diminish_multiplier - .125
+				self.diminish_multiplier = 0.0 if (dim_m <= 0) else dim_m
+			return (self.diminish_multiplier > 0)
+			
+		def reset_multiplier(self):
+			self.until_diminish = 0
+			self.diminish_multiplier = 1.0
+		
 		def set_circular(self, circular = True):
 			self.circular = circular
-		
+			
 		def get_frame(self, index=-1):
 			if index<0: 
 				index = self.index

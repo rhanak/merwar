@@ -33,7 +33,7 @@ class Enemy( AbstractCharacter ):
 		self.velocity = [0.0,0.0]
 		self._update_image( random.randrange(self.combo_state.get_num_frames()) )
 		self.rect = self.image.get_rect()
-		self.rect.topleft = random.randrange(700,840), random.randrange(400,570)
+		self.rect.topleft = random.randrange(640, 750), random.randrange(60,500)
 		self.maxBefore = int( props['max before'] )
 		self.maxBetween = int( props['max between'] )
 		self.health = 100
@@ -103,7 +103,8 @@ class Enemy( AbstractCharacter ):
 	def track(self,pos):
 		oldVelocity = self.velocity[0]
 		maxVelocity, negVelocity = self.maxVelocity, (-1*self.maxVelocity)
-		if(abs(self.rect.center[0]-pos[0])<200 and abs(self.rect.center[1]-pos[1])<100):
+		if(abs(self.rect.center[0]-pos[0])<(self.rect.width/1.5)\
+		 	and abs(self.rect.center[1]-pos[1])<(self.rect.height)/1.5):
 			self.mode = 1
 		elif(abs(self.rect.center[0]-pos[0])<200):
 			if(self.rect.center[1]>pos[1]):
@@ -134,7 +135,8 @@ class Enemy( AbstractCharacter ):
 		self.rect = newpos
 		
 	def combat(self,pos):
-		if(abs(self.rect.center[0]-pos[0])>200 or abs(self.rect.center[1]-pos[1])>100):
+		if(abs(self.rect.center[0]-pos[0])>(self.rect.width/1.5)\
+			or abs(self.rect.center[1]-pos[1])>(self.rect.height)/1.5):
 			self.mode = 0
 		self.velocity = [0.0,0.0]
 		if(self.preparedToAttack==0):
@@ -149,6 +151,9 @@ class Enemy( AbstractCharacter ):
 				
 	def damageEnemy(self, attackPower):
 		#self.combo_state.interrupt()
+		if(random.randrange(100) < 50): 
+			self.combo_state.interrupt()
+			self.preparedToAttack = 0
 		self.health -= attackPower
 		
 	def prepareToAttack(self):
