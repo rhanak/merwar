@@ -61,11 +61,28 @@ class CharManager():
 				
 	def check_prot_attack_evil( self ):
 		listc = pygame.sprite.spritecollide( self.prot, self.evil, dokill = False)
+		closest = self.closest_evil( listc )
 		for enemy in listc:
 			if(not self.prot.combo_state.in_default_state()\
 				and not self.prot.combo_state.dodging()):
-				enemy.damageEnemy(self.prot.attackPower)
+				if enemy is closest:
+					enemy.damageEnemy(self.prot.attackPower)
+				else:
+					enemy.damageEnemy(self.prot.attackPower/2)
 				#print "This enemy is being attacked by prot %s" % enemy
+	
+	def closest_evil( self, collided_list ):
+		if not collided_list: return None
+		closest = collided_list[0]
+		dist = math.hypot(self.prot.rect.centerx - closest.rect.centerx, \
+			self.prot.rect.centery - closest.rect.centery)
+		for enemy in collided_list:
+			dist_d = math.hypot(self.prot.rect.centerx - enemy.rect.centerx, \
+			self.prot.rect.centery - enemy.rect.centery)
+			if (dist_d < dist):
+				dist = dist_d
+				closest = enemy
+		return closest
 	
 	def update( self ):
 		self.evil_collide()
