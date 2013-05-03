@@ -101,19 +101,18 @@ class GameEngine():
 		
 	def create_page(self, pageParts):
 		# Iterate over the different enemy types for this page
+		print "Creating page"
+		page = Page()
 		for enemy in pageParts.split(';', -1):
-			page = Page()
+			print enemy
 			parts = enemy.split('/',3)
-			print parts
 			# If len is 2 we don't have number of health items 
 			if(len(parts) == 2):
 				page.add_enemy(int(parts[0]), parts[1])
 			elif(len(parts) == 3):
 				page.add_enemy(int(parts[0]), parts[1])
 				page.set_num_items(int(parts[2]))
-			
-			print page
-		
+		print page
 		return page
 		
 	def load_enemy_parameters(self):
@@ -126,6 +125,7 @@ class GameEngine():
 		return pages
 		
 	def set_current_assets(self):	
+		print self.current_page
 		self.char_manager.set_assets(self.current_page)
 		
 	def update_prot_with_border_checks(self):
@@ -153,8 +153,6 @@ class GameEngine():
 	
 	def move_to_first_page(self):	
 		self.current_page = self.pages[0]
-		print "FUCKKKKK"
-		print self.current_page
 		self.change_page(0)
 	
 	def change_page(self, page_num):

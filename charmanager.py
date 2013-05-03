@@ -184,10 +184,8 @@ class CharManager():
 		
 	def set_assets(self, page):
 		self.evil.empty()
-		print page
 		for enemy in page.enemies:
 			num, type_ = enemy
-			print enemy
 			self.add_evils(num, type_)
 			
 		# Now finally set the health items	
@@ -195,7 +193,6 @@ class CharManager():
 		
 	def add_evils( self, num_enemies, type_enemies):
 		'''add in type differences'''
-		print "num_enemies %s " % num_enemies
 		for x in range(0,num_enemies):
 			self.add_evil(type_enemies)
 			
