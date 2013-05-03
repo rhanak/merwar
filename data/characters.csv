@@ -2,4 +2,4 @@ character,sprite sheet,num frames,frames per second,sprite width,sprite height,s
 mermaid,mermaid.png,12,1,180,180,10,295,2,,,,
 darkfemalemermaid,darkfemalemermaid.png,8,1,180,180,700,100,10,0,4,50,10
 darkmalemermaid,darkmalemermaid.png,8,1,359,270,700,100,16,2,2,45,8
-hippocamp,hippocamp.png,6,1,360,360,600,100,24,4,1,25,6
+hippocamp,hippocamp.png,6,1,420,420,600,100,24,4,1,25,6
