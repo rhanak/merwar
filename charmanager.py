@@ -151,15 +151,42 @@ class CharManager():
 			
 		
 	####END NEW BORDER CHECKING CODE
+	
+	def update_page_before_changing(self, page):
+		page.clear_enemies()
+		enemies = dict()
+		for evil in self.evil:
+			if(not enemies.has_key(evil.type)):
+				enemies[evil.type] = 0
+			enemies[evil.type] += 1
 		
-	def set_evils( self, num_enemies, type_enemies):
+		# set the num of items
+		page.set_enemies(enemies.items())
+		# set the amount health reups
+		page.set_num_items(len(self.items))
+		
+	def set_assets(self, page):
 		self.evil.empty()
+		print page
+		for enemy in page.enemies:
+			num, type_ = enemy
+			print enemy
+			self.add_evils(num, type_)
+			
+		# Now finally set the health items	
+		self.set_items(page.num_items)	
+		
+	def add_evils( self, num_enemies, type_enemies):
 		'''add in type differences'''
+		print "num_enemies %s " % num_enemies
 		for x in range(0,num_enemies):
-			if(type_enemies=='df'):
-				self.evil.add(Enemy(self.propsfiles[1], self, type='df'))
-			elif(type_enemies=='dm'):
-				self.evil.add(Enemy(self.propsfiles[2], self, type='dm'))
+			self.add_evil(type_enemies)
+			
+	def add_evil(self, type_enemies):
+		if(type_enemies=='df'):
+			self.evil.add(Enemy(self.propsfiles[1], self, type='df'))
+		elif(type_enemies=='dm'):
+			self.evil.add(Enemy(self.propsfiles[2], self, type='dm'))
 		
 	def set_items(self, item_num):
 		if not self.items:

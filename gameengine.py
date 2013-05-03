@@ -7,6 +7,7 @@ from characters import *
 from dalesutils import *
 from selectscreen import *
 from gameconditions import *
+from page import *
 
 kDataDir = 'data'
 kGlobals = 'globals.json'
@@ -20,18 +21,19 @@ class GameEngine():
 		###### END TIMER STUFF
 		self.page_num = 0
 		self.curr_list_num = 1
-		self.curr_num_enemies = 0
-		self.curr_type_enemies = "none"
+		
 		self.screen = screen
 		self.backgrounds = self.load_backgrounds()
-		self.assets_list = self.load_enemy_parameters()
+		self.pages = self.load_enemy_parameters()
 		
 		# A thread inside Character manager uses this to communicate with the main thread
 		self.eventThreading = threading.Event()
 		self.char_manager = CharManager(screen, self.eventThreading)
 		self.gameConditions = GameConditions(screen, self.eventThreading, self.resetGame, self.times)
 		
-		self.read_current_assets()
+		self.move_to_first_page()
+		
+		self.set_current_assets()
 		
 		self.whiff_sound = load_sound('bubbles.wav')
 		#self.stab_sound = load_sound('bubbleshit.wav')
@@ -44,8 +46,9 @@ class GameEngine():
 			#print "You won!"
 		
 		if(self.gameConditions.isNormalPlay()):
-			background = self.backgrounds[self.curr_list_num]
-			self.screen.blit(background, (0,0))
+			if(self.curr_list_num < len(self.backgrounds)):
+				background = self.backgrounds[self.curr_list_num]
+				self.screen.blit(background, (0,0))
 			#self.change_difficulty(
 			self.char_manager.update() #)
 			#self.change_page(self.char_manager.pagecheck())
@@ -74,11 +77,11 @@ class GameEngine():
 			self.times[i] = 0.0
 		
 		# Reload the enemies
-		self.read_current_assets()
+		self.set_current_assets()
 		
 		# Move the protoganist to the first page
 		self.char_manager.move_protagonist((100, 300))
-		self.change_page_by_offset(-2)
+		self.move_to_first_page()
 				
 	def load_backgrounds(self):
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()
@@ -96,20 +99,34 @@ class GameEngine():
 	def get_opening_screen(self):
 		return self.backgrounds[1]
 		
-	def load_enemy_parameters(self):
-		assets_list = []
-		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
-			assets_list.append(difficulty['page 0'])
-		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
-			assets_list.append(difficulty['page 1'])
-		for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
-			assets_list.append(difficulty['page 2'])
-		return assets_list
+	def create_page(self, pageParts):
+		# Iterate over the different enemy types for this page
+		for enemy in pageParts.split(';', -1):
+			page = Page()
+			parts = enemy.split('/',3)
+			print parts
+			# If len is 2 we don't have number of health items 
+			if(len(parts) == 2):
+				page.add_enemy(int(parts[0]), parts[1])
+			elif(len(parts) == 3):
+				page.add_enemy(int(parts[0]), parts[1])
+				page.set_num_items(int(parts[2]))
+			
+			print page
 		
-	def read_current_assets(self):	
-		assets = self.assets_list[self.curr_list_num].split('/',3)
-		self.char_manager.set_evils(int(assets[0]),assets[1])
-		self.char_manager.set_items(int(assets[2]))
+		return page
+		
+	def load_enemy_parameters(self):
+		crap = ['page 0', 'page 1', 'page 2', 'page 3', 'page 4','page 5','page 6', 'page 7', 'page 8']
+		pages = []
+		for dudu in crap: 
+			for difficulty in csv.DictReader( open( os.path.join( 'data/screens.csv' ) ) ):
+				page = self.create_page(difficulty[dudu])
+				pages.append(page)
+		return pages
+		
+	def set_current_assets(self):	
+		self.char_manager.set_assets(self.current_page)
 		
 	def update_prot_with_border_checks(self):
 		''' Use more modular functions from charmanager to check borders
@@ -131,9 +148,22 @@ class GameEngine():
 			return False
 		self.curr_list_num += num
 		#print "Difficulty list val: ", self.curr_list_num
-		self.read_current_assets()
+		self.set_current_assets()
 		return True
+	
+	def move_to_first_page(self):	
+		self.current_page = self.pages[0]
+		print "FUCKKKKK"
+		print self.current_page
+		self.change_page(0)
+	
+	def change_page(self, page_num):
+		self.page_num = page_num
+		self.curr_list_num = 3*page_num
 		
+		# Update the current page with the enemies and items before changing pages
+		self.update_before_page_change()
+	
 	def change_page_by_offset(self, num):
 		''' Attempt to change Page by num.
 			Return TRUE if new page valid, FALSE otherwise.
@@ -143,8 +173,21 @@ class GameEngine():
 		if((3 * new_page_num > (len(self.backgrounds)-1)) or new_page_num < 0): return False
 		self.page_num = new_page_num
 		self.curr_list_num += 3*num
-		self.read_current_assets()
+		
+		# Update the current page with the enemies and items before changing pages
+		self.update_before_page_change()
+	
 		return True
+		
+	def update_before_page_change(self):
+		self.current_page = self.pages[self.curr_list_num]
+		
+		# Update the current page with the enemies and items before changing pages
+		#BIG TODO
+		#self.char_manager.update_page_before_changing(self.current_page)
+		
+		# Set the assets for the current page
+		self.set_current_assets()
 	
 	### I am wondering whether I could separate the below into a new Class 	###
 	### ---DALE 		[TIMER CODE FOLLOWS]								###	

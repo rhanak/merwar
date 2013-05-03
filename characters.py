@@ -8,6 +8,7 @@ class Enemy( AbstractCharacter ):
 	def __init__( self, props, charmanager, type="df" ):
 		AbstractCharacter.__init__( self )
 		self.manager = charmanager
+		self.type = type
 		self.properties = props
 		self.sprite_sheet, sheet_rect = load_image_alpha( props['sprite sheet'] )
 		width, height = int(props['sprite width']), int(props['sprite height'])
