@@ -226,4 +226,6 @@ class GameEngine():
 		display_text(self.screen, levels[self.timer_index]  + ":" + 
 		"{:10.2f}".format(self.times[self.timer_index]/1000.0) +"s", 20, 20)
 		
+		display_text(self.screen, "Page"  + ":     " + str(self.page_num+1), 20, 50)
+		
 
