@@ -222,7 +222,8 @@ class GameEngine():
 			the timer for the currently active difficulty level '''
 		self.timer_index = self.curr_list_num % 3
 		self.times[self.timer_index] += self.clock.tick()
-		display_text(self.screen, "Level " + str(self.timer_index + 1) + ":" + 
+		levels = ["Easy", "Medium", "Hard"]
+		display_text(self.screen, levels[self.timer_index]  + ":" + 
 		"{:10.2f}".format(self.times[self.timer_index]/1000.0) +"s", 20, 20)
 		
 
