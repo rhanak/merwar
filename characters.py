@@ -106,20 +106,20 @@ class Enemy( AbstractCharacter ):
 	def track(self,pos):
 		oldVelocity = self.velocity[0]
 		maxVelocity, negVelocity = self.maxVelocity, (-1*self.maxVelocity)
-		if(abs(self.rect.center[0]-pos[0])<(self.rect.width/1.5)\
-		 	and abs(self.rect.center[1]-pos[1])<(self.rect.height)/1.5):
+		if(abs(self.rect.center[0]-pos[0])<=(self.rect.width/1.65)\
+		 	and abs(self.rect.center[1]-pos[1])<=(self.rect.height)/1.65):
 			self.mode = 1
-		elif(abs(self.rect.center[0]-pos[0])<200):
-			if(self.rect.center[1]>pos[1]):
-				self.velocity[1]=negVelocity
-			elif(abs(self.rect.center[1])<pos[1]):
-				self.velocity[1]=maxVelocity
-		elif(abs(self.rect.center[1]-pos[1])<100):
-			if(self.rect.center[0]>pos[0]):
-				self.velocity[0]=negVelocity
-			elif(self.rect.center[0]<pos[0]):
-				self.velocity[0]=maxVelocity
 		else:
+			if(abs(self.rect.center[0]-pos[0])<=(self.rect.width/1.65)):
+				if(self.rect.center[1]>pos[1]):
+					self.velocity[1]=negVelocity
+				elif(abs(self.rect.center[1])<pos[1]):
+					self.velocity[1]=maxVelocity
+			if(abs(self.rect.center[1]-pos[1])<=(self.rect.height)/1.65):
+				if(self.rect.center[0]>pos[0]):
+					self.velocity[0]=negVelocity
+				elif(self.rect.center[0]<pos[0]):
+					self.velocity[0]=maxVelocity
 			if(self.rect.center[0]>pos[0]):
 				self.velocity[0]=negVelocity
 			elif(self.rect.center[0]<pos[0]):
@@ -138,8 +138,8 @@ class Enemy( AbstractCharacter ):
 		self.rect = newpos
 		
 	def combat(self,pos):
-		if(abs(self.rect.center[0]-pos[0])>(self.rect.width/1.5)\
-			or abs(self.rect.center[1]-pos[1])>(self.rect.height)/1.5):
+		if(abs(self.rect.center[0]-pos[0])>(self.rect.width/1.65)\
+			or abs(self.rect.center[1]-pos[1])>(self.rect.height)/1.65):
 			self.mode = 0
 		self.velocity = [0.0,0.0]
 		if(self.preparedToAttack==0):
