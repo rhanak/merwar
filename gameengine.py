@@ -22,6 +22,8 @@ class GameEngine():
 		self.page_num = 0
 		self.curr_list_num = 1
 		
+		self.firstrun = 1
+		
 		self.screen = screen
 		self.backgrounds = self.load_backgrounds()
 		self.pages = self.load_enemy_parameters()
@@ -37,6 +39,7 @@ class GameEngine():
 		
 		self.whiff_sound = load_sound('bubbles.wav')
 		#self.stab_sound = load_sound('bubbleshit.wav')
+		
 
 	def update(self):
 		self.gameConditions.update()
@@ -124,7 +127,7 @@ class GameEngine():
 				pages.append(page)
 		return pages
 		
-	def set_current_assets(self):	
+	def set_current_assets(self): 
 		print self.current_page
 		self.char_manager.set_assets(self.current_page)
 		
@@ -151,7 +154,7 @@ class GameEngine():
 		self.set_current_assets()
 		return True
 	
-	def move_to_first_page(self):	
+	def move_to_first_page(self): 
 		self.current_page = self.pages[0]
 		self.change_page(0)
 	
@@ -182,16 +185,19 @@ class GameEngine():
 		
 		# Update the current page with the enemies and items before changing pages
 		#BIG TODO
-		#self.char_manager.update_page_before_changing(self.current_page)
+		if(not self.firstrun):
+			self.char_manager.update_page_before_changing(self.current_page)
+		else:
+			self.firstrun = 0
 		
 		# Set the assets for the current page
 		self.set_current_assets()
 	
-	### I am wondering whether I could separate the below into a new Class 	###
-	### ---DALE 		[TIMER CODE FOLLOWS]								###	
+	### I am wondering whether I could separate the below into a new Class	###
+	### ---DALE			[TIMER CODE FOLLOWS]								### 
 	def update_timers(self):
 		''' Called from the main update function, this will update and display 
-			the	timer for the currently active difficulty level '''
+			the timer for the currently active difficulty level '''
 		self.timer_index = self.curr_list_num % 3
 		self.times[self.timer_index] += self.clock.tick()
 		display_text(self.screen, "Level " + str(self.timer_index + 1) + ":" + 
