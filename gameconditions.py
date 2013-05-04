@@ -48,7 +48,7 @@ class GameConditions():
 					display_rage_text(self.screen, "Time spent Hard: %d seconds" % (self.times[2]/1000), self.screen.get_width()/2 - 20, self.screen.get_height()/2 - 180)
 					
 					# Just weighted addition of scores in the different levels
-					score = self.times[0] * .1 + self.times[1] * .3 + self.times[2] * .6
+					score = 1/self.times[0] * .1 * 1000 + 1/self.times[1] * .3 * 1000 + 1/self.times[2] * .6 * 1000
 					
 					display_rage_text(self.screen, "New Score: %d" % score, self.screen.get_width()/2 - 20, self.screen.get_height()/2 - 50)
 					#display_rage_text(self.screen, "YOU WON!!!!", self.screen.get_width()/2 - 20, self.screen.get_height()/2)
