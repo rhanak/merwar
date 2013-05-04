@@ -22,8 +22,6 @@ class GameEngine():
 		self.page_num = 0
 		self.curr_list_num = 1
 		
-		self.firstrun = 1
-		
 		self.screen = screen
 		self.backgrounds = self.load_backgrounds()
 		self.pages = self.load_enemy_parameters()
@@ -185,10 +183,7 @@ class GameEngine():
 		
 		# Update the current page with the enemies and items before changing pages
 		#BIG TODO
-		if(not self.firstrun):
-			self.char_manager.update_page_before_changing(self.current_page)
-		else:
-			self.firstrun = 0
+		#self.char_manager.update_page_before_changing(self.current_page)
 		
 		# Set the assets for the current page
 		self.set_current_assets()
