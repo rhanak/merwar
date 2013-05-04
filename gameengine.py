@@ -85,16 +85,43 @@ class GameEngine():
 		self.move_to_first_page()
 				
 	def load_backgrounds(self):
+		#0
 		e0 = pygame.image.load(path_rejoin('data/backgrounds/e0.png')).convert()
 		n0 = pygame.image.load(path_rejoin('data/backgrounds/n0.png')).convert()
 		h0 = pygame.image.load(path_rejoin('data/backgrounds/h0.png')).convert()
+		#1
 		e1 = pygame.image.load(path_rejoin('data/backgrounds/e1.png')).convert()
 		n1 = pygame.image.load(path_rejoin('data/backgrounds/n1.png')).convert()
 		h1 = pygame.image.load(path_rejoin('data/backgrounds/h1.png')).convert()
+		#2
 		e2 = pygame.image.load(path_rejoin('data/backgrounds/e2.png')).convert()
 		n2 = pygame.image.load(path_rejoin('data/backgrounds/n2.png')).convert()
 		h2 = pygame.image.load(path_rejoin('data/backgrounds/h2.png')).convert()
-		background_list = [e0,n0,h0,e1,n1,h1,e2,n2,h2]
+		#3
+		e3 = pygame.image.load(path_rejoin('data/backgrounds/e3.png')).convert()
+		n3 = pygame.image.load(path_rejoin('data/backgrounds/n3.png')).convert()
+		h3 = pygame.image.load(path_rejoin('data/backgrounds/h3.png')).convert()
+		#4
+		e4 = pygame.image.load(path_rejoin('data/backgrounds/e4.png')).convert()
+		n4 = pygame.image.load(path_rejoin('data/backgrounds/n4.png')).convert()
+		h4 = pygame.image.load(path_rejoin('data/backgrounds/h4.png')).convert()
+		#5
+		e5 = pygame.image.load(path_rejoin('data/backgrounds/e5.png')).convert()
+		n5 = pygame.image.load(path_rejoin('data/backgrounds/n5.png')).convert()
+		h5 = pygame.image.load(path_rejoin('data/backgrounds/h5.png')).convert()
+		#6
+		e6 = pygame.image.load(path_rejoin('data/backgrounds/e6.png')).convert()
+		n6 = pygame.image.load(path_rejoin('data/backgrounds/n6.png')).convert()
+		h6 = pygame.image.load(path_rejoin('data/backgrounds/h6.png')).convert()
+		#7
+		e7 = pygame.image.load(path_rejoin('data/backgrounds/e7.png')).convert()
+		n7 = pygame.image.load(path_rejoin('data/backgrounds/n7.png')).convert()
+		h7 = pygame.image.load(path_rejoin('data/backgrounds/h7.png')).convert()
+		#8
+		e8 = pygame.image.load(path_rejoin('data/backgrounds/e8.png')).convert()
+		n8 = pygame.image.load(path_rejoin('data/backgrounds/n8.png')).convert()
+		h8 = pygame.image.load(path_rejoin('data/backgrounds/h8.png')).convert()
+		background_list = [e0,n0,h0,e1,n1,h1,e2,n2,h2,e3,n3,h3,e4,n4,h4,e5,n5,h5,e6,n6,h6,e7,n7,h7,e8,n8,h8]
 		return background_list
 		
 	def get_opening_screen(self):
