@@ -20,10 +20,13 @@ class Enemy( AbstractCharacter ):
 		elif type == "dm":
 			combo_map = [("pullback", "dmpullback.png", (width, height, 2)),\
 							("attack", "dmattack.png", (width, height, 4))]
+		elif type == "hip":
+			combo_map = [("pullback", "hippullback.png", (width-1, height-1, 3)),\
+							("attack", "hipattack.png", (width-1, height-1, 5))]
 		else:
 			combo_map = None
 		###END CLUNKY IF STATEMENTS###
-		self.combo_state = ComboMachine( (props['sprite sheet'], (width, height, num_frames)),\
+		self.combo_state = ComboMachine( (props['sprite sheet'], (width-1, height-1, num_frames)),\
 					combo_map)
 		#self.frames = extract_frames_from_spritesheet( sheet_rect, int( props['sprite width'] ), int( props['sprite height'] ), int( props['num frames'] ) )
 		self.attackPower = int( props['attack power'] )
