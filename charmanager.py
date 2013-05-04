@@ -201,6 +201,8 @@ class CharManager():
 			self.evil.add(Enemy(self.propsfiles[1], self, type='df'))
 		elif(type_enemies=='dm'):
 			self.evil.add(Enemy(self.propsfiles[2], self, type='dm'))
+		elif(type_enemies=='hip'):
+				self.evil.add(Enemy(self.propsfiles[3], self, type='hip'))
 		
 	def set_items(self, item_num):
 		if not self.items:
