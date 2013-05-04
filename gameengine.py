@@ -42,7 +42,7 @@ class GameEngine():
 	def update(self):
 		self.gameConditions.update()
 		
-		if(self.page_num == 2 and not self.char_manager.evil):
+		if(self.page_num == 8 and not self.char_manager.evil):
 			self.gameConditions.win()
 			#print "You won!"
 		
