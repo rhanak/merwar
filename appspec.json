@@ -1,0 +1,16 @@
+{
+    "version": 0.0,
+    "Resources": [
+      {
+        "test-app-lambda": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Name": "test-app-lambda",
+            "Alias": "test-app-lambdaAlias",
+            "CurrentVersion": "0",
+            "TargetVersion": "1"
+          }
+        }
+      }
+    ]
+  }
