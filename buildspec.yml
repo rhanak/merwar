@@ -16,5 +16,7 @@ phases:
 artifacts:
   type: zip
   files:
+    - appspec.json
+    - handlers.py
     - template.yaml 
     - output-template.yaml
