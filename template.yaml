@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion : "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: A sample SAM template for deploying Lambda functions.
+Resources:
+  MyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: test-app-lambda
+      CodeUri: ./
+      Runtime: python3.8
+      Handler: handlers.lambda_handler
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "logs:*"
+                - "secretsmanager:GetSecretValue"
+              Resource: "*" 

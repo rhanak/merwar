@@ -6,8 +6,6 @@ phases:
     commands:
       # Install/upgrade pip and AWS CLI 
       - pip install --upgrade pip awscli
-      # Install the packages required
-      - pip install -r requirements.txt -t .
   build:
     commands:
       # LAMBDA_ARTIFACT_STORE_BUCKET should be an environment variable in AWS::CodeBuild::Project
